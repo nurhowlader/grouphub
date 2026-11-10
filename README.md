@@ -80,7 +80,7 @@ You don't need to create any tables: the app creates them the first time it star
 
 From then on, every `git push` to `main` redeploys automatically ("sync" on the L06 slide).
 
-**Free plan sleep:** a free Render service goes to sleep after 15 minutes with no visits, and the next visit then takes about 50 seconds to load. Participants open the link once and expect it to be fast, so set up a free monitor at https://uptimerobot.com (or cron-job.org) that calls `https://<your-url>/` every 10 minutes. One service running all month stays within Render's 750 free hours.
+**Free plan sleep:** a free Render service goes to sleep after 15 minutes with no visits, and the next visit then takes about 50 seconds to load. Participants open the link once and expect it to be fast, so set up a free monitor at https://uptimerobot.com (or cron-job.org) that calls `https://<your-url>/health` every 10 minutes (not `/`, which would count as a landing visit in your metrics). One service running all month stays within Render's 750 free hours.
 
 ## 5 · Measurement: Google Tag Manager + GA4 (L08)
 

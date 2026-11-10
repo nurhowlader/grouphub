@@ -231,6 +231,12 @@ def landing():
     return render("landing.html")
 
 
+@app.route("/health")
+def health():
+    """For the uptime monitor that keeps Render awake. Not tracked, so it doesn't inflate landing_view."""
+    return "ok", 200, {"Content-Type": "text/plain"}
+
+
 @app.route("/lang/<code>")
 def set_lang(code):
     resp = redirect(request.referrer or url_for("landing"))
