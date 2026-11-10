@@ -24,7 +24,7 @@ from models import (Activity, Agency, Announcement, ChecklistItem, Event,
 # ------------------------------------------------------------------ config
 app = Flask(__name__)
 app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", "dev-only-change-me")
-if os.environ.get("DATABASE_URL") and not os.environ.get("SECRET_KEY"):
+if os.environ.get("RENDER") and not os.environ.get("SECRET_KEY"):   # RENDER is set automatically on Render's servers
     # The fallback key above is public on GitHub: with it, anyone could fake a login. Refuse to run online without a real one.
     raise RuntimeError("SECRET_KEY is not set. Add it in Render → Environment.")
 db_url = os.environ.get("DATABASE_URL", "sqlite:///grouphub.db")
