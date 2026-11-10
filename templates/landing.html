@@ -1,24 +1,76 @@
 {% extends "base.html" %}
 {% block title %}{{ t('tagline') }}{% endblock %}
-{% block nav %}<a href="{{ url_for('login') }}">{{ t('login') }}</a>{% endblock %}
+{% block nav %}<a class="nav-link" href="{{ url_for('login') }}">{{ t('login') }}</a>{% endblock %}
 {% block content %}
 <section class="hero">
-  <p class="eyebrow">{{ t('tagline') }}</p>
-  <h1>{{ t('hero_title') }}</h1>
-  <p class="lead">{{ t('hero_sub') }}</p>
-  <div class="cta-row">
-    <a class="btn primary big" href="{{ url_for('demo') }}">{{ t('try_demo') }}</a>
-    <a class="btn big" href="{{ url_for('signup') }}">{{ t('signup') }}</a>
+  <div>
+    <p class="eyebrow">{{ t('tagline') }}</p>
+    <h1>{{ t('hero_h')|safe }}</h1>
+    <p class="lead">{{ t('hero_sub') }}</p>
+    <div class="cta-row">
+      <a class="btn primary big" href="{{ url_for('demo') }}">{{ t('try_demo') }} {{ icon('arrow-right') }}</a>
+      <a class="btn big" href="{{ url_for('signup') }}">{{ t('signup') }}</a>
+    </div>
+    <div class="trust">
+      <span>{{ icon('check-circle') }} {{ t('trust_1') }}</span>
+      <span>{{ icon('check-circle') }} {{ t('trust_2') }}</span>
+      <span>{{ icon('check-circle') }} {{ t('trust_3') }}</span>
+    </div>
+  </div>
+
+  {# a small picture of the product, built in HTML so it stays sharp and translates #}
+  <div class="mock" aria-hidden="true">
+    <div class="mock-window">
+      <div class="mock-bar"><i></i><i></i><i></i></div>
+      <div class="mock-body">
+        <div class="mock-title"><b>{{ t('mock_trip') }}</b><span class="mock-count">{{ t('mock_days') }}</span></div>
+        <div class="mock-row"><span>{{ t('mock_i1') }}</span><div class="bar"><span style="width:94%"></span></div><span>15/16</span></div>
+        <div class="mock-row"><span>{{ t('mock_i2') }}</span><div class="bar"><span style="width:81%"></span></div><span>13/16</span></div>
+        <div class="mock-row"><span>{{ t('mock_i3') }}</span><div class="bar"><span style="width:56%"></span></div><span>9/16</span></div>
+        <div class="mock-quote"><span>{{ icon('check-circle') }} {{ t('mock_q') }}</span><b>€ 1.780</b></div>
+      </div>
+    </div>
+    <div class="mock-phone">
+      <div class="p-top"><b>{{ t('mock_hi') }}</b>{{ t('mock_todo') }}</div>
+      <div class="p-task"><span>{{ t('mock_i2') }}</span><span class="mini-btn">✓</span></div>
+      <div class="p-task"><span>{{ t('mock_i3') }}</span><span class="mini-btn">✓</span></div>
+    </div>
   </div>
 </section>
 
-<section class="features">
-  {% for i in range(1, 6) %}
-  <div class="feature">
-    <div class="num">{{ i }}</div>
-    <h3>{{ t('f%d_t' % i) }}</h3>
-    <p>{{ t('f%d_d' % i) }}</p>
+<section class="section">
+  <div class="section-head">
+    <h2>{{ t('roles_title') }}</h2>
+    <p>{{ t('roles_sub') }}</p>
   </div>
-  {% endfor %}
+  <div class="roles">
+    <div class="role"><div class="role-ico">{{ icon('briefcase') }}</div><h3>{{ t('role_a_t') }}</h3><p>{{ t('role_a_d') }}</p></div>
+    <div class="role"><div class="role-ico">{{ icon('shield') }}</div><h3>{{ t('role_r_t') }}</h3><p>{{ t('role_r_d') }}</p></div>
+    <div class="role"><div class="role-ico">{{ icon('phone') }}</div><h3>{{ t('role_p_t') }}</h3><p>{{ t('role_p_d') }}</p></div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-head">
+    <h2>{{ t('features_title') }}</h2>
+    <p>{{ t('features_sub') }}</p>
+  </div>
+  <div class="features">
+    {% for i, ic in [(1, 'receipt'), (2, 'checks'), (3, 'link'), (4, 'clock'), (5, 'history')] %}
+    <div class="feature">
+      <div class="f-ico">{{ icon(ic) }}</div>
+      <div><h3>{{ t('f%d_t' % i) }}</h3><p>{{ t('f%d_d' % i) }}</p></div>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="cta-band">
+  <h2>{{ t('cta_title') }}</h2>
+  <p>{{ t('cta_sub') }}</p>
+  <div class="cta-row">
+    <a class="btn primary big" href="{{ url_for('demo') }}">{{ t('try_demo') }} {{ icon('arrow-right') }}</a>
+    <a class="btn outline big" href="{{ url_for('signup') }}">{{ t('signup') }}</a>
+  </div>
 </section>
 {% endblock %}

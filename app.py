@@ -12,6 +12,7 @@ from urllib.parse import quote as urlquote
 
 from flask import (Flask, abort, flash, g, jsonify, redirect, render_template,
                    request, session, url_for)
+from icons import icon
 from werkzeug.security import check_password_hash, generate_password_hash
 
 from analytics import KEY_EVENTS, pop_datalayer, track
@@ -206,7 +207,7 @@ def act_text(a):
 
 @app.context_processor
 def inject():
-    return dict(t=t, lang=lang(), act_text=act_text, fmt_date=fmt_date, fmt_dt=fmt_dt, fmt_money=fmt_money,
+    return dict(t=t, icon=icon, lang=lang(), act_text=act_text, fmt_date=fmt_date, fmt_dt=fmt_dt, fmt_money=fmt_money,
                 rel_days=rel_days, APP_NAME=APP_NAME, GTM_ID=GTM_ID, csrf=session.get("csrf", ""),
                 user=g.get("user"), today=date.today())
 

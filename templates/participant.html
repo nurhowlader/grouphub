@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% import "_macros.html" as m with context %}
 {% block title %}{{ trip.title }}{% endblock %}
-{% block brand %}<span class="brand"><span class="logo">G</span>{{ trip.agency.name }}</span>{% endblock %}
+{% block brand %}<span class="brand"><span class="logo">G</span><span class="brand-name">{{ trip.agency.name }}</span></span>{% endblock %}
 {% block nav %}{% endblock %}
 {% block bodyclass %}mobile{% endblock %}
 {% block mainclass %}narrow{% endblock %}
@@ -14,9 +14,15 @@
   {% if trip.days_to_departure is not none and trip.days_to_departure >= 0 %}
     <div class="countdown inline"><b>{{ trip.days_to_departure }}</b> <span>{{ t('days_to_departure') }}</span></div>
   {% endif %}
+  {% if trip.items %}
+    {% set ns = namespace(done=0) %}
+    {% for it in trip.items %}{% if p.status_for(it.id) != 'todo' %}{% set ns.done = ns.done + 1 %}{% endif %}{% endfor %}
+    <div class="p-progress"><span>{{ t('p_progress', done=ns.done, total=trip.items|length) }}</span>
+      <div class="bar"><span style="width: {{ (100 * ns.done / trip.items|length)|round|int }}%"></span></div></div>
+  {% endif %}
 </section>
 
-<p class="hint small">🔖 {{ t('save_link') }}</p>
+<p class="hint small">{{ icon('bookmark') }} {{ t('save_link') }}</p>
 
 <div class="card" id="todo">
   <h2>{{ t('my_todo') }}</h2>
@@ -45,12 +51,12 @@
 </div>
 
 <div class="card">
-  <h2>{{ t('announcements') }}</h2>
+  <h2>{{ icon('megaphone') }} {{ t('announcements') }}</h2>
   {{ m.announcements_view(trip.announcements) }}
 </div>
 
 <div class="card">
-  <h2>{{ t('itinerary') }}</h2>
+  <h2>{{ icon('calendar') }} {{ t('itinerary') }}</h2>
   {{ m.itinerary_view(trip.itinerary) }}
 </div>
 

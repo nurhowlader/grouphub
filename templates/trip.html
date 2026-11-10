@@ -2,27 +2,33 @@
 {% import "_macros.html" as m with context %}
 {% block title %}{{ trip.title }}{% endblock %}
 {% block content %}
+<a class="back" href="{{ url_for('trips') }}">{{ icon('arrow-left') }} {{ t('my_trips') }}</a>
 <div class="trip-head">
   <div>
-    <a class="small muted" href="{{ url_for('trips') }}">← {{ t('my_trips') }}</a>
     <h1>{{ trip.title }}</h1>
-    <p class="muted">{{ trip.destination }}
-      {% if trip.start_date %} · {{ fmt_date(trip.start_date) }}{% if trip.end_date %} – {{ fmt_date(trip.end_date) }}{% endif %}{% endif %}
-      {% if trip.rep_name %} · {{ t('rep_name') }}: <b>{{ trip.rep_name }}</b>{% endif %}</p>
+    <div class="meta-row">
+      {% if trip.destination %}<span class="chip">{{ icon('pin') }} {{ trip.destination }}</span>{% endif %}
+      {% if trip.start_date %}<span class="chip">{{ icon('calendar') }} {{ fmt_date(trip.start_date) }}{% if trip.end_date %} – {{ fmt_date(trip.end_date) }}{% endif %}</span>{% endif %}
+      {% if trip.rep_name %}<span class="chip">{{ icon('shield') }} {{ t('rep_name') }}: <b>{{ trip.rep_name }}</b></span>{% endif %}
+    </div>
   </div>
   {% if trip.days_to_departure is not none and trip.days_to_departure >= 0 %}
     <div class="countdown"><b>{{ trip.days_to_departure }}</b><span>{{ t('days_to_departure') }}</span></div>
   {% endif %}
 </div>
 
-<nav class="tabs">
+{% set tab_icons = {'overview': 'grid', 'quotes': 'receipt', 'checklist': 'checks', 'participants': 'users', 'info': 'megaphone', 'deadlines': 'clock', 'history': 'history'} %}
+{% set pending_quotes = trip.quotes|selectattr('status', 'equalto', 'sent')|list %}
+<div class="tabs-wrap">
+<nav class="tabs" id="tabs">
   {% for tb in tabs %}
-    <a href="{{ url_for('trip_view', trip_id=trip.id, tab=tb) }}" class="{{ 'on' if tb == tab }}">{{ t('tab_' + tb) }}
+    <a href="{{ url_for('trip_view', trip_id=trip.id, tab=tb) }}" class="{{ 'on' if tb == tab }}">{{ icon(tab_icons[tb]) }}{{ t('tab_' + tb) }}
       {% if tb == 'participants' %}<span class="count">{{ trip.participants|length }}</span>{% endif %}
-      {% if tb == 'quotes' %}<span class="count">{{ trip.quotes|length }}</span>{% endif %}
+      {% if tb == 'quotes' %}<span class="count">{{ trip.quotes|length }}</span>{% if pending_quotes %}<span class="dot" title="{{ t('att_quote', v=pending_quotes[-1].version_no) }}"></span>{% endif %}{% endif %}
     </a>
   {% endfor %}
 </nav>
+</div>
 
 {# ============================================================ OVERVIEW #}
 {% if tab == 'overview' %}
@@ -39,23 +45,53 @@
     </div>
     {% endif %}
 
+    {# ---- what needs the agent now: overdue checklist items, quotes awaiting approval, deadlines within 7 days #}
+    {% set ns = namespace(n=0) %}
+    <div class="card attention">
+      <div class="card-head"><h3>{{ t('needs_attention') }}</h3></div>
+      <ul class="attention-list">
+      {% for it in trip.items %}{% set pr = progress[it.id] %}
+        {% if it.is_overdue and pr.missing %}{% set ns.n = ns.n + 1 %}
+        <li><span class="a-ico late">{{ icon('alert') }}</span>
+          <div class="a-body"><b>{{ t('att_overdue', title=it.title, n=pr.missing|length) }}</b>
+            <span class="small muted">{{ t('att_overdue_sub', date=fmt_date(it.due_date)) }}</span></div>
+          <a class="btn small" href="?tab=checklist">{{ t('remind') }}</a></li>
+        {% endif %}
+      {% endfor %}
+      {% for q in pending_quotes %}{% set ns.n = ns.n + 1 %}
+        <li><span class="a-ico warn">{{ icon('receipt') }}</span>
+          <div class="a-body"><b>{{ t('att_quote', v=q.version_no) }}</b>
+            <span class="small muted">{{ t('att_quote_sub') }}</span></div>
+          <a class="btn small" href="?tab=quotes">{{ t('view') }}</a></li>
+      {% endfor %}
+      {% for d in deadlines if (d.date - today).days >= 0 and (d.date - today).days <= 7 %}{% set ns.n = ns.n + 1 %}
+        <li><span class="a-ico info">{{ icon('clock') }}</span>
+          <div class="a-body"><b>{{ d.label }}</b>
+            <span class="small muted">{{ t('att_deadline_sub', when=rel_days((d.date - today).days)) }} · {{ fmt_date(d.date) }}</span></div>
+          <a class="btn small" href="?tab={{ 'deadlines' if d.kind == 'supplier' else 'checklist' }}">{{ t('view') }}</a></li>
+      {% endfor %}
+      </ul>
+      {% if ns.n == 0 %}<div class="all-good"><span class="a-ico">{{ icon('check') }}</span>{{ t('all_good') }}</div>{% endif %}
+    </div>
+
     <div class="stats">
-      <div class="stat"><span class="big">{{ trip.participants|length }}</span><span>{{ t('participants') }}</span>
+      <div class="stat"><span class="stat-label">{{ icon('users') }}{{ t('participants') }}</span><span class="big">{{ trip.participants|length }}</span>
         <span class="small muted">{{ trip.participants|selectattr('joined_via_link')|list|length }} {{ t('via_link') }}</span></div>
-      <div class="stat"><span class="big">{{ completion if completion is not none else '—' }}{% if completion is not none %}%{% endif %}</span><span>{{ t('completion') }}</span></div>
-      <div class="stat"><span class="big">{% if trip.official_quote %}v{{ trip.official_quote.version_no }}{% else %}—{% endif %}</span><span>{{ t('official_quote') }}</span>
+      <div class="stat"><span class="stat-label">{{ icon('checks') }}{{ t('completion') }}</span><span class="big">{{ completion if completion is not none else '—' }}{% if completion is not none %}%{% endif %}</span>
+        {% if completion is not none %}<div class="bar {{ 'full' if completion == 100 }}" style="margin-top:6px"><span style="width: {{ completion }}%"></span></div>{% endif %}</div>
+      <div class="stat"><span class="stat-label">{{ icon('receipt') }}{{ t('official_quote') }}</span><span class="big">{% if trip.official_quote %}v{{ trip.official_quote.version_no }}{% else %}—{% endif %}</span>
         {% if trip.official_quote %}<span class="small muted">{{ fmt_money(trip.official_quote.price_per_person) }} / pax</span>{% endif %}</div>
     </div>
 
     <div class="card">
-      <h3>{{ t('tab_checklist') }}</h3>
+      <div class="card-head"><h3>{{ t('tab_checklist') }}</h3><a class="small" href="?tab=checklist">{{ t('view') }} →</a></div>
       {% if not trip.items %}<p class="muted">{{ t('no_items') }}</p>{% endif %}
       {% for it in trip.items %}{% set pr = progress[it.id] %}
         <div class="prog-row">
           <div class="prog-label"><b>{{ it.title }}</b>
             <span class="small muted">{% if it.due_date %}{{ t('due_date') }} {{ fmt_date(it.due_date) }}{% endif %}
               {% if it.is_overdue and pr.done < pr.total %} <span class="badge late">{{ t('overdue') }}</span>{% endif %}</span></div>
-          <div class="bar"><span style="width: {{ pr.pct }}%"></span></div>
+          <div class="bar {{ 'full' if pr.pct == 100 }}"><span style="width: {{ pr.pct }}%"></span></div>
           <span class="small prog-num">{{ pr.done }}/{{ pr.total }}</span>
         </div>
       {% endfor %}
@@ -63,14 +99,14 @@
 
     <div class="card">
       <h3>{{ t('recent_activity') }}</h3>
-      {{ m.activity_list(trip.activity, 8) }}
+      {{ m.activity_list(trip.activity, 5) }}
       <a class="small" href="?tab=history">{{ t('tab_history') }} →</a>
     </div>
   </div>
 
   <aside class="col-side">
     <div class="card">
-      <h3>{{ t('share_links') }}</h3>
+      <h3>{{ icon('link') }} {{ t('share_links') }}</h3>
       <p class="label">{{ t('join_link') }}</p>
       <div class="copy-field"><input readonly value="{{ join_url }}"><button class="btn small" data-copy="{{ join_url }}" data-track="invite_link_copied" data-trip="{{ trip.id }}">{{ t('copy') }}</button></div>
       <p class="small muted">{{ t('join_link_help') }}</p>
@@ -135,8 +171,8 @@
 
 {# ============================================================ CHECKLIST (US3) #}
 {% if tab == 'checklist' %}
-<div class="card">
-  <h3>{{ t('add_item') }}</h3>
+<details class="add-panel" {{ 'open' if not trip.items }}>
+  <summary><span class="plus">{{ icon('plus') }}</span>{{ t('add_item') }}<span class="help">{{ t('add_item_help') }}</span></summary>
   <form method="post" action="{{ url_for('item_add', trip_id=trip.id) }}" class="form grid-form">
     <input type="hidden" name="csrf" value="{{ csrf }}">
     <label>{{ t('kind') }}<select name="kind">
@@ -149,7 +185,7 @@
     <label class="full">{{ t('description') }}<input name="description"></label>
     <button class="btn primary">{{ t('add') }}</button>
   </form>
-</div>
+</details>
 
 {% if not trip.items %}<div class="card empty">{{ t('no_items') }}</div>
 {% elif not trip.participants %}<div class="card empty">{{ t('no_participants_yet') }} <a href="?tab=participants">→</a></div>
@@ -161,11 +197,11 @@
       <div class="item-sum-head">
         <span class="kind {{ it.kind }}">{{ t('kind_' + it.kind) }}</span>
         <form method="post" action="{{ url_for('item_delete', trip_id=trip.id, iid=it.id) }}" onsubmit="return confirm('{{ t('confirm_delete') }}')">
-          <input type="hidden" name="csrf" value="{{ csrf }}"><button class="link-btn small" title="{{ t('delete') }}">✕</button></form>
+          <input type="hidden" name="csrf" value="{{ csrf }}"><button class="link-btn small icon-btn" title="{{ t('delete') }}">{{ icon('x') }}</button></form>
       </div>
       <b>{{ it.title }}</b>
       <p class="small muted">{% if it.amount %}{{ fmt_money(it.amount) }} · {% endif %}{% if it.due_date %}{{ t('due_date') }}: {{ fmt_date(it.due_date) }} ({{ rel_days((it.due_date - today).days) }}){% endif %}</p>
-      <div class="bar"><span style="width: {{ pr.pct }}%"></span></div>
+      <div class="bar {{ 'full' if pr.pct == 100 }}"><span style="width: {{ pr.pct }}%"></span></div>
       <p class="small"><b>{{ pr.done }}/{{ pr.total }}</b> · {{ t('st_verified') }}: {{ pr.verified }}</p>
       {% if pr.missing %}
         {% set txt, wa = reminders[it.id] %}
@@ -180,8 +216,9 @@
 </div>
 
 <div class="card">
-  <p class="small muted">{{ t('matrix_help') }}
-    <span class="legend"><span class="cell todo">·</span> {{ t('st_todo') }} <span class="cell submitted">✓</span> {{ t('st_submitted') }} <span class="cell verified">✓✓</span> {{ t('st_verified') }}</span></p>
+  <div class="card-head"><h3>{{ t('matrix_title') }}</h3></div>
+  <p class="small muted">{{ t('matrix_help') }}</p>
+  <div class="legend" style="margin-bottom:14px"><span><span class="cell todo">—</span> {{ t('st_todo') }}</span> <span><span class="cell submitted">✓</span> {{ t('st_submitted') }}</span> <span><span class="cell verified">✓✓</span> {{ t('st_verified') }}</span></div>
   <div class="matrix-wrap">
   <table class="matrix">
     <thead><tr><th>{{ t('participants') }}</th>{% for it in trip.items %}<th title="{{ it.title }}">{{ it.title|truncate(22, True, '…') }}</th>{% endfor %}</tr></thead>
@@ -191,7 +228,7 @@
       {% for it in trip.items %}{% set st = p.status_for(it.id) %}
         <td><form method="post" action="{{ url_for('task_cycle', trip_id=trip.id, pid=p.id, iid=it.id) }}" class="cell-form">
           <input type="hidden" name="csrf" value="{{ csrf }}">
-          <button class="cell {{ st }}" title="{{ t('st_' + st) }}">{{ {'todo': '·', 'submitted': '✓', 'verified': '✓✓'}[st] }}</button></form></td>
+          <button class="cell {{ st }}" title="{{ t('st_' + st) }}">{{ {'todo': '—', 'submitted': '✓', 'verified': '✓✓'}[st] }}</button></form></td>
       {% endfor %}</tr>
     {% endfor %}
     </tbody>
@@ -210,13 +247,13 @@
     <table class="list">
       {% for p in trip.participants %}
       <tr>
-        <td><b>{{ p.name }}</b><br><span class="small muted">{{ p.email }}</span></td>
+        <td><div class="person"><span class="avatar">{{ p.name.split()|map('first')|join|upper|truncate(2, True, '') }}</span><div><b>{{ p.name }}</b><br><span class="small muted">{{ p.email }}</span></div></div></td>
         <td class="small muted">{{ t('via_link') if p.joined_via_link else t('added_by_agency') }}<br>
           {{ t('last_seen') }}: {{ fmt_dt(p.last_seen_at) if p.last_seen_at else t('never') }}</td>
         <td class="right nowrap">
           <button class="btn small" data-copy="{{ url_for('participant_page', token=p.token, _external=True) }}" data-track="personal_link_copied" data-trip="{{ trip.id }}">{{ t('personal_link') }}</button>
           <form class="inline" method="post" action="{{ url_for('participant_delete', trip_id=trip.id, pid=p.id) }}" onsubmit="return confirm('{{ t('confirm_delete') }}')">
-            <input type="hidden" name="csrf" value="{{ csrf }}"><button class="link-btn small">✕</button></form>
+            <input type="hidden" name="csrf" value="{{ csrf }}"><button class="link-btn small icon-btn" title="{{ t('delete') }}">{{ icon('x') }}</button></form>
         </td>
       </tr>
       {% endfor %}
@@ -328,6 +365,9 @@
 
 {% block scripts %}
 <script>
+  // on phones, scroll the tab bar so the open tab is visible
+  const onTab = document.querySelector('.tabs a.on');
+  if (onTab) onTab.parentElement.scrollLeft = onTab.offsetLeft - 16;
   // matrix cells update without reloading the page
   document.querySelectorAll('.cell-form').forEach(f => f.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -336,7 +376,7 @@
     if (!r.ok) return f.submit();
     const j = await r.json();
     btn.className = 'cell ' + j.status; btn.title = j.label;
-    btn.textContent = {todo: '·', submitted: '✓', verified: '✓✓'}[j.status];
+    btn.textContent = {todo: '—', submitted: '✓', verified: '✓✓'}[j.status];
     window.dataLayer.push({event: 'app_event', event_name: j.status === 'verified' ? 'task_verified' : 'task_status_changed'});
   }));
 </script>

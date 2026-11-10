@@ -57,12 +57,12 @@
     <div class="it-row">
       <span class="it-time">{{ x.time }}</span>
       <div class="it-body"><b>{{ x.title }}</b>
-        {% if x.location %}<br><span class="small">📍 {{ x.location }}</span>{% endif %}
+        {% if x.location %}<br><span class="small muted">{{ icon('pin') }} {{ x.location }}</span>{% endif %}
         {% if x.notes %}<br><span class="small muted">{{ x.notes }}</span>{% endif %}
       </div>
       {% if can_delete %}
       <form method="post" action="{{ url_for('itinerary_delete', trip_id=trip.id, xid=x.id) }}" onsubmit="return confirm('{{ t('confirm_delete') }}')">
-        <input type="hidden" name="csrf" value="{{ csrf }}"><button class="link-btn small">✕</button></form>
+        <input type="hidden" name="csrf" value="{{ csrf }}"><button class="link-btn small icon-btn" title="{{ t('delete') }}">{{ icon('x') }}</button></form>
       {% endif %}
     </div>
   {% endfor %}

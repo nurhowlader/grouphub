@@ -1,22 +1,29 @@
 {% extends "base.html" %}
 {% block title %}{{ t('signup') if mode == 'signup' else t('login') }}{% endblock %}
-{% block mainclass %}narrow{% endblock %}
 {% block content %}
-<div class="card">
-  <h1>{{ t('signup') if mode == 'signup' else t('login') }}</h1>
-  <form method="post" class="form">
-    <input type="hidden" name="csrf" value="{{ csrf }}">
-    {% if mode == 'signup' %}
-      <label>{{ t('agency_name') }}<input name="agency" required value="{{ request.form.agency }}"></label>
-      <label>{{ t('your_name') }}<input name="name" required value="{{ request.form.name }}"></label>
+<div class="auth">
+  <div class="card">
+    <h1>{{ t('signup') if mode == 'signup' else t('login') }}</h1>
+    <p class="sub">{{ t('signup_sub') if mode == 'signup' else t('login_sub') }}</p>
+    <form method="post" class="form">
+      <input type="hidden" name="csrf" value="{{ csrf }}">
+      {% if mode == 'signup' %}
+        <label>{{ t('agency_name') }}<input name="agency" required autocomplete="organization" value="{{ request.form.agency }}"></label>
+        <label>{{ t('your_name') }}<input name="name" required autocomplete="name" value="{{ request.form.name }}"></label>
+      {% endif %}
+      <label>{{ t('email') }}<input type="email" name="email" required autocomplete="email" value="{{ request.form.email }}"></label>
+      <label>{{ t('password') }}<input type="password" name="password" required
+        autocomplete="{{ 'new-password' if mode == 'signup' else 'current-password' }}" {% if mode == 'signup' %}minlength="8"{% endif %}></label>
+      <button class="btn primary big block">{{ t('signup') if mode == 'signup' else t('login') }}</button>
+    </form>
+    {% if mode != 'signup' %}
+      <div class="divider">{{ t('or_word') }}</div>
+      <a class="btn block" href="{{ url_for('demo') }}">{{ t('try_demo') }}</a>
     {% endif %}
-    <label>{{ t('email') }}<input type="email" name="email" required value="{{ request.form.email }}"></label>
-    <label>{{ t('password') }}<input type="password" name="password" required {% if mode == 'signup' %}minlength="8"{% endif %}></label>
-    <button class="btn primary">{{ t('signup') if mode == 'signup' else t('login') }}</button>
-  </form>
-  <p class="muted small">
+  </div>
+  <p class="alt">
     {% if mode == 'signup' %}{{ t('have_account') }} <a href="{{ url_for('login') }}">{{ t('login') }}</a>
-    {% else %}{{ t('no_account') }} <a href="{{ url_for('signup') }}">{{ t('signup') }}</a> · <a href="{{ url_for('demo') }}">{{ t('try_demo') }}</a>{% endif %}
+    {% else %}{{ t('no_account') }} <a href="{{ url_for('signup') }}">{{ t('signup') }}</a>{% endif %}
   </p>
 </div>
 {% endblock %}

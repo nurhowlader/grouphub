@@ -4,7 +4,10 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{% block title %}{{ APP_NAME }}{% endblock %} · {{ APP_NAME }}</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}?v=2">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='46' fill='%230e5a5f'/><text x='50' y='66' font-size='50' text-anchor='middle' fill='white' font-family='sans-serif'>G</text></svg>">
   <script>
     window.dataLayer = window.dataLayer || [];
@@ -29,13 +32,13 @@
 
   <header class="topbar">
     <div class="wrap topbar-inner">
-      {% block brand %}<a class="brand" href="{{ url_for('trips') if user else url_for('landing') }}"><span class="logo">G</span>{{ APP_NAME }}</a>{% endblock %}
+      {% block brand %}<a class="brand" href="{{ url_for('trips') if user else url_for('landing') }}"><span class="logo">G</span><span class="brand-name">{{ APP_NAME }}</span></a>{% endblock %}
       <nav class="nav">
         {% block nav %}
         {% if user %}
-          <a href="{{ url_for('trips') }}">{{ t('my_trips') }}</a>
-          <span class="muted small hide-sm">{{ user.agency.name }}</span>
-          <a href="{{ url_for('logout') }}">{{ t('logout') }}</a>
+          <span class="agency-chip hide-sm">{{ icon('building') }}{{ user.agency.name }}</span>
+          <a class="nav-link" href="{{ url_for('trips') }}">{{ t('my_trips') }}</a>
+          <a class="nav-link" href="{{ url_for('logout') }}" title="{{ t('logout') }}">{{ icon('logout') }}<span class="hide-sm"> {{ t('logout') }}</span></a>
         {% endif %}
         {% endblock %}
         <span class="lang">
@@ -48,7 +51,7 @@
 
   <main class="wrap {% block mainclass %}{% endblock %}">
     {% with msgs = get_flashed_messages(with_categories=true) %}
-      {% for cat, m in msgs %}<div class="flash {{ cat }}">{{ m }}</div>{% endfor %}
+      {% for cat, m in msgs %}<div class="flash {{ cat }}">{{ icon('alert' if cat == 'error' else 'check-circle') }}{{ m }}</div>{% endfor %}
     {% endwith %}
     {% block content %}{% endblock %}
   </main>

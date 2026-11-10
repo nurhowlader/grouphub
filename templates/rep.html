@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% import "_macros.html" as m with context %}
 {% block title %}{{ t('rep_title') }} · {{ trip.title }}{% endblock %}
-{% block brand %}<span class="brand"><span class="logo">G</span>{{ trip.agency.name }}</span>{% endblock %}
+{% block brand %}<span class="brand"><span class="logo">G</span><span class="brand-name">{{ trip.agency.name }}</span></span>{% endblock %}
 {% block nav %}{% endblock %}
 {% block content %}
 <div class="trip-head">

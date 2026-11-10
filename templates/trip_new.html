@@ -2,6 +2,7 @@
 {% block title %}{{ t('new_trip') }}{% endblock %}
 {% block mainclass %}narrow{% endblock %}
 {% block content %}
+<a class="back" href="{{ url_for('trips') }}">{{ icon('arrow-left') }} {{ t('my_trips') }}</a>
 <div class="card">
   <h1>{{ t('new_trip') }}</h1>
   <form method="post" class="form">
@@ -16,7 +17,7 @@
       <label>{{ t('rep_name') }}<input name="rep_name"></label>
       <label>{{ t('rep_email') }} <span class="muted">({{ t('optional') }})</span><input type="email" name="rep_email"></label>
     </div>
-    <button class="btn primary">{{ t('save') }}</button>
+    <button class="btn primary big">{{ t('save') }}</button>
   </form>
 </div>
 {% endblock %}
