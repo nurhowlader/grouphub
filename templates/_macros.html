@@ -1,0 +1,83 @@
+{% macro activity_list(rows, limit=None) %}
+  {% set rows = rows[:limit] if limit else rows %}
+  {% if not rows %}<p class="muted">{{ t('nothing_yet') }}</p>{% endif %}
+  <ul class="timeline">
+    {% for a in rows %}
+    <li><span class="when">{{ fmt_dt(a.created_at) }}</span> <b>{{ a.actor }}</b> {{ act_text(a) }}</li>
+    {% endfor %}
+  </ul>
+{% endmacro %}
+
+{% macro quote_status(q) %}
+  <span class="badge {{ q.status }}">{{ t('status_' + q.status) }}</span>
+{% endmacro %}
+
+{% macro quote_card(q, show_price=True) %}
+  <div class="quote {{ q.status }}">
+    <div class="quote-head">
+      <div>
+        <span class="vno">v{{ q.version_no }}</span>
+        <b>{{ q.title or (t('version') ~ ' ' ~ q.version_no) }}</b>
+      </div>
+      {{ quote_status(q) }}
+    </div>
+    {% if show_price and q.price_per_person %}
+      <p class="price">{{ fmt_money(q.price_per_person) }} <span class="muted small">/ pax</span>
+        {% if q.total %}<span class="muted small"> · {{ q.pax }} pax · {{ t('total') }} {{ fmt_money(q.total) }}</span>{% endif %}</p>
+    {% endif %}
+    {% if q.changes %}<p class="changes">{{ q.changes }}</p>{% endif %}
+    <p class="small muted">{{ q.created_by }} · {{ fmt_dt(q.created_at) }}
+      {% if q.link_url %} · <a href="{{ q.link_url }}" target="_blank" rel="noopener">PDF ↗</a>{% endif %}</p>
+    {% if q.status == 'approved' or q.approved_at %}
+      <p class="approval">✓ {{ t('approved_by_on', who=q.approved_by, when=fmt_dt(q.approved_at), channel=t('ch_' ~ (q.approval_channel or 'email'))) }}
+      {% if q.approval_note %}<br><span class="muted">{{ q.approval_note }}</span>{% endif %}</p>
+    {% endif %}
+    {{ caller() if caller }}
+  </div>
+{% endmacro %}
+
+{% macro deadline_rows(rows) %}
+  {% if not rows %}<p class="muted">{{ t('nothing_yet') }}</p>{% endif %}
+  <ul class="deadlines">
+  {% for r in rows %}
+    {% set n = (r.date - today).days %}
+    <li class="{{ 'late' if n < 0 else ('soon' if n <= 14 else '') }}">
+      <span class="dl-date">{{ fmt_date(r.date) }}<br><span class="small">{{ rel_days(n) }}</span></span>
+      <span><b>{{ r.label }}</b><br><span class="small muted">{{ r.sub }}</span></span>
+    </li>
+  {% endfor %}
+  </ul>
+{% endmacro %}
+
+{% macro itinerary_view(items, can_delete=False, trip=None) %}
+  {% if not items %}<p class="muted">{{ t('no_itinerary') }}</p>{% endif %}
+  {% set ns = namespace(day=None) %}
+  {% for x in items %}
+    {% if x.day != ns.day %}{% set ns.day = x.day %}<h4 class="day">{{ fmt_date(x.day, weekday=True) if x.day else '—' }}</h4>{% endif %}
+    <div class="it-row">
+      <span class="it-time">{{ x.time }}</span>
+      <div class="it-body"><b>{{ x.title }}</b>
+        {% if x.location %}<br><span class="small">📍 {{ x.location }}</span>{% endif %}
+        {% if x.notes %}<br><span class="small muted">{{ x.notes }}</span>{% endif %}
+      </div>
+      {% if can_delete %}
+      <form method="post" action="{{ url_for('itinerary_delete', trip_id=trip.id, xid=x.id) }}" onsubmit="return confirm('{{ t('confirm_delete') }}')">
+        <input type="hidden" name="csrf" value="{{ csrf }}"><button class="link-btn small">✕</button></form>
+      {% endif %}
+    </div>
+  {% endfor %}
+{% endmacro %}
+
+{% macro announcements_view(rows, can_delete=False, trip=None) %}
+  {% if not rows %}<p class="muted">{{ t('no_announcements') }}</p>{% endif %}
+  {% for a in rows %}
+  <div class="announcement">
+    <p>{{ a.body }}</p>
+    <p class="small muted">{{ a.author }} · {{ fmt_dt(a.created_at) }}
+      {% if can_delete %}
+      <form class="inline" method="post" action="{{ url_for('announcement_delete', trip_id=trip.id, aid=a.id) }}" onsubmit="return confirm('{{ t('confirm_delete') }}')">
+        <input type="hidden" name="csrf" value="{{ csrf }}"><button class="link-btn small">{{ t('delete') }}</button></form>
+      {% endif %}</p>
+  </div>
+  {% endfor %}
+{% endmacro %}

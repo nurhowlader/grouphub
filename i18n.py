@@ -1,0 +1,270 @@
+"""Italian / English strings. Add a key here, then use {{ t('key') }} in templates."""
+
+STRINGS = {
+    # --- general / nav
+    "tagline": ("Il viaggio di gruppo, in un unico posto.", "Group travel, in one place."),
+    "login": ("Accedi", "Log in"),
+    "logout": ("Esci", "Log out"),
+    "signup": ("Crea account agenzia", "Create agency account"),
+    "try_demo": ("Prova la demo (senza registrazione)", "Try the demo (no sign-up)"),
+    "my_trips": ("I miei viaggi", "My trips"),
+    "save": ("Salva", "Save"),
+    "add": ("Aggiungi", "Add"),
+    "delete": ("Elimina", "Delete"),
+    "cancel": ("Annulla", "Cancel"),
+    "copy": ("Copia", "Copy"),
+    "copied": ("Copiato!", "Copied!"),
+    "open": ("Apri", "Open"),
+    "optional": ("facoltativo", "optional"),
+    "days_left": ("{n} giorni", "{n} days"),
+    "today": ("oggi", "today"),
+    "days_ago": ("{n} giorni fa", "{n} days ago"),
+    "demo_banner": ("Stai usando una demo: i dati sono di esempio e vengono cancellati dopo 7 giorni.",
+                    "You are in a demo: the data is sample data and is deleted after 7 days."),
+    "demo_cta": ("Ti piace? Crea il tuo account", "Like it? Create your account"),
+
+    # --- landing
+    "hero_title": ("Preventivi, documenti, pagamenti e scadenze del gruppo. Tutto in un unico spazio.",
+                   "Quotes, documents, payments and deadlines for the whole group. All in one space."),
+    "hero_sub": ("Per le agenzie che organizzano viaggi di gruppo e incentive. L'agenzia parla con il referente; "
+                 "i partecipanti aprono un link, senza app e senza password.",
+                 "For agencies running group and incentive trips. The agency talks to the representative; "
+                 "participants open a link, with no app and no password."),
+    "f1_t": ("Versione ufficiale del preventivo", "One official quote version"),
+    "f1_d": ("Ogni versione è registrata. Il referente approva con un clic: data, ora e nome restano nello storico.",
+             "Every version is logged. The representative approves with one click: date, time and name stay in the history."),
+    "f2_t": ("Chi manca cosa, a colpo d'occhio", "Who is missing what, at a glance"),
+    "f2_d": ("Checklist di documenti e pagamenti per ogni partecipante, con barre di avanzamento e promemoria pronti da inviare.",
+             "Document and payment checklist per participant, with progress bars and reminders ready to send."),
+    "f3_t": ("Un link per tutto il gruppo", "One link for the whole group"),
+    "f3_d": ("Programma, comunicazioni ufficiali e la propria lista di cose da fare. Due minuti, niente registrazione.",
+             "Programme, official announcements and their own to-do list. Two minutes, no sign-up."),
+    "f4_t": ("Scadenze fornitori e penali", "Supplier deadlines and penalties"),
+    "f4_d": ("Una timeline con i giorni rimanenti e la penale che scatta dopo ogni data.",
+             "A timeline with the days left and the penalty that applies after each date."),
+    "f5_t": ("Storico del fascicolo", "File history"),
+    "f5_d": ("Ogni collega vede cosa è stato richiesto, preventivato, modificato e approvato.",
+             "Every colleague sees what was requested, quoted, changed and approved."),
+
+    # --- auth
+    "agency_name": ("Nome agenzia", "Agency name"),
+    "your_name": ("Il tuo nome", "Your name"),
+    "email": ("Email", "Email"),
+    "password": ("Password", "Password"),
+    "have_account": ("Hai già un account?", "Already have an account?"),
+    "no_account": ("Non hai un account?", "No account yet?"),
+    "err_login": ("Email o password non corretti.", "Wrong email or password."),
+    "err_email_taken": ("Esiste già un account con questa email.", "An account with this email already exists."),
+    "err_required": ("Compila tutti i campi obbligatori.", "Please fill in all required fields."),
+    "err_password_short": ("La password deve avere almeno 8 caratteri.", "Password must be at least 8 characters."),
+
+    # --- trips list / new trip
+    "new_trip": ("Nuovo viaggio", "New trip"),
+    "no_trips": ("Nessun viaggio ancora. Crea il primo: ci vuole un minuto.", "No trips yet. Create the first one: it takes a minute."),
+    "trip_title": ("Nome del viaggio", "Trip name"),
+    "trip_title_ph": ("es. Incentive Islanda 2027 – Rossi Auto", "e.g. Iceland Incentive 2027 – Rossi Auto"),
+    "destination": ("Destinazione", "Destination"),
+    "start_date": ("Partenza", "Departure"),
+    "end_date": ("Rientro", "Return"),
+    "rep_name": ("Referente del gruppo", "Group representative"),
+    "rep_email": ("Email del referente", "Representative's email"),
+    "participants": ("Partecipanti", "Participants"),
+    "departure_in": ("Partenza tra {n} giorni", "Departure in {n} days"),
+    "days_to_departure": ("giorni alla partenza", "days to departure"),
+    "departed": ("Partito", "Departed"),
+    "completion": ("Completamento checklist", "Checklist completion"),
+
+    # --- trip tabs
+    "tab_overview": ("Panoramica", "Overview"),
+    "tab_quotes": ("Preventivi", "Quotes"),
+    "tab_checklist": ("Documenti e pagamenti", "Documents & payments"),
+    "tab_participants": ("Partecipanti", "Participants"),
+    "tab_info": ("Programma e comunicazioni", "Programme & announcements"),
+    "tab_deadlines": ("Scadenze fornitori", "Supplier deadlines"),
+    "tab_history": ("Storico", "History"),
+
+    # --- overview
+    "share_links": ("Link da condividere", "Links to share"),
+    "join_link": ("Link per il gruppo", "Group link"),
+    "join_link_help": ("Mandalo nella chat del gruppo: ognuno inserisce nome ed email e vede la sua pagina. Nessuna password.",
+                       "Send it to the group chat: everyone enters name and email and gets their own page. No password."),
+    "rep_link": ("Link del referente", "Representative's link"),
+    "rep_link_help": ("Solo per il referente: approva i preventivi e vede chi è in ritardo.",
+                      "Only for the representative: approves quotes and sees who is behind."),
+    "official_quote": ("Preventivo ufficiale", "Official quote"),
+    "no_official_quote": ("Nessuna versione approvata", "No approved version yet"),
+    "next_deadlines": ("Prossime scadenze", "Next deadlines"),
+    "recent_activity": ("Attività recente", "Recent activity"),
+    "nothing_yet": ("Niente ancora.", "Nothing yet."),
+    "joined": ("Iscritti", "Joined"),
+    "getting_started": ("Per iniziare", "Getting started"),
+    "gs_1": ("Aggiungi la prima versione del preventivo", "Add the first quote version"),
+    "gs_2": ("Crea la checklist (passaporto, acconto, saldo…)", "Create the checklist (passport, deposit, balance…)"),
+    "gs_3": ("Condividi il link del gruppo", "Share the group link"),
+
+    # --- quotes
+    "add_quote": ("Registra una nuova versione", "Log a new version"),
+    "version": ("Versione", "Version"),
+    "quote_title": ("Titolo", "Title"),
+    "quote_title_ph": ("es. Proposta con escursione al ghiacciaio", "e.g. Proposal with glacier hike"),
+    "price_pp": ("Prezzo a persona (€)", "Price per person (€)"),
+    "pax": ("N. persone", "No. of people"),
+    "total": ("Totale", "Total"),
+    "changes": ("Cosa cambia rispetto alla versione precedente", "What changed vs the previous version"),
+    "link_pdf": ("Link al PDF / al preventivo", "Link to the PDF / quote"),
+    "status_sent": ("In attesa di approvazione", "Awaiting approval"),
+    "status_approved": ("Approvato · ufficiale", "Approved · official"),
+    "status_superseded": ("Superato", "Superseded"),
+    "approved_by_on": ("Approvato da {who} il {when} ({channel})", "Approved by {who} on {when} ({channel})"),
+    "record_approval": ("Registra approvazione ricevuta fuori dalla piattaforma", "Record an approval received outside the platform"),
+    "approved_by": ("Approvato da", "Approved by"),
+    "channel": ("Canale", "Channel"),
+    "ch_in_app": ("in piattaforma", "in-app"),
+    "ch_email": ("email", "email"),
+    "ch_whatsapp": ("WhatsApp", "WhatsApp"),
+    "ch_phone": ("telefono", "phone"),
+    "note": ("Nota", "Note"),
+    "no_quotes": ("Nessuna versione registrata.", "No versions logged yet."),
+    "quotes_help": ("Ogni modifica = una nuova versione. Quando il referente approva, le versioni precedenti diventano 'superate'.",
+                    "Every change = a new version. When the representative approves, earlier versions become 'superseded'."),
+
+    # --- checklist
+    "add_item": ("Aggiungi voce alla checklist", "Add checklist item"),
+    "kind": ("Tipo", "Type"),
+    "kind_document": ("Documento", "Document"),
+    "kind_payment": ("Pagamento", "Payment"),
+    "kind_other": ("Scelta / altro", "Choice / other"),
+    "item_title": ("Voce", "Item"),
+    "item_title_ph": ("es. Passaporto valido 6 mesi", "e.g. Passport valid 6 months"),
+    "description": ("Istruzioni per i partecipanti", "Instructions for participants"),
+    "amount": ("Importo (€)", "Amount (€)"),
+    "due_date": ("Scadenza", "Deadline"),
+    "overdue": ("Scaduto", "Overdue"),
+    "st_todo": ("Da fare", "To do"),
+    "st_submitted": ("Fatto (da verificare)", "Done (to verify)"),
+    "st_verified": ("Verificato", "Verified"),
+    "matrix_help": ("Clicca su una cella per cambiare stato: da fare → fatto → verificato.",
+                    "Click a cell to change status: to do → done → verified."),
+    "copy_reminder": ("Copia promemoria", "Copy reminder"),
+    "send_whatsapp": ("Invia su WhatsApp", "Send on WhatsApp"),
+    "reminder_text": ("Ciao! Promemoria per \"{trip}\": manca ancora \"{item}\"{due}. Da completare: {names}. "
+                      "Trovi tutto qui: {link}",
+                      "Hi! Reminder for \"{trip}\": \"{item}\" is still missing{due}. Still to do: {names}. "
+                      "Everything is here: {link}"),
+    "reminder_due": (" (scadenza {d})", " (deadline {d})"),
+    "all_done": ("Tutti in regola ✓", "Everyone is done ✓"),
+    "no_items": ("Nessuna voce ancora. Aggiungi passaporto, acconto, saldo…", "No items yet. Add passport, deposit, balance…"),
+    "no_participants_yet": ("Aggiungi i partecipanti o condividi il link del gruppo.", "Add participants or share the group link."),
+    "missing": ("Mancano", "Missing"),
+
+    # --- participants
+    "add_participants": ("Aggiungi partecipanti", "Add participants"),
+    "bulk_help": ("Uno per riga: Nome Cognome, email (l'email è facoltativa). Puoi incollare da Excel.",
+                  "One per line: Full name, email (email optional). You can paste from Excel."),
+    "personal_link": ("Link personale", "Personal link"),
+    "via_link": ("iscritto tramite link", "joined via link"),
+    "added_by_agency": ("aggiunto dall'agenzia", "added by agency"),
+    "last_seen": ("Ultimo accesso", "Last visit"),
+    "never": ("mai", "never"),
+    "confirm_delete": ("Sei sicuro?", "Are you sure?"),
+
+    # --- info
+    "itinerary": ("Programma", "Programme"),
+    "add_itinerary": ("Aggiungi al programma", "Add to programme"),
+    "day": ("Giorno", "Day"),
+    "time": ("Ora", "Time"),
+    "activity": ("Attività", "Activity"),
+    "location": ("Luogo / punto di ritrovo", "Place / meeting point"),
+    "notes": ("Note", "Notes"),
+    "announcements": ("Comunicazioni ufficiali", "Official announcements"),
+    "new_announcement": ("Nuova comunicazione a tutto il gruppo", "New announcement to the whole group"),
+    "announcement_ph": ("es. Il transfer del giorno 2 parte alle 7:30 dalla hall dell'hotel.",
+                        "e.g. The day-2 transfer leaves at 7:30 from the hotel lobby."),
+    "publish": ("Pubblica", "Publish"),
+    "no_itinerary": ("Programma non ancora pubblicato.", "Programme not published yet."),
+    "no_announcements": ("Nessuna comunicazione.", "No announcements."),
+
+    # --- deadlines
+    "add_deadline": ("Aggiungi scadenza fornitore", "Add supplier deadline"),
+    "supplier": ("Fornitore", "Supplier"),
+    "what": ("Cosa va deciso / confermato", "What must be decided / confirmed"),
+    "penalty": ("Cosa succede dopo questa data", "What happens after this date"),
+    "penalty_ph": ("es. penale del 30% sul costo camere", "e.g. 30% penalty on room cost"),
+    "done": ("Fatto", "Done"),
+    "mark_done": ("Segna come fatto", "Mark as done"),
+    "reopen": ("Riapri", "Reopen"),
+    "no_deadlines": ("Nessuna scadenza fornitore.", "No supplier deadlines."),
+    "deadlines_help": ("Le scadenze entro 14 giorni sono evidenziate. Il referente le vede nella sua pagina.",
+                       "Deadlines within 14 days are highlighted. The representative sees them on their page."),
+    "expired": ("scaduta", "expired"),
+
+    # --- join / participant
+    "join_title": ("Entra nel gruppo", "Join the group"),
+    "join_sub": ("Inserisci nome ed email per vedere il programma e le tue cose da fare. Nessuna password.",
+                 "Enter your name and email to see the programme and your to-dos. No password."),
+    "join_btn": ("Entra", "Join"),
+    "privacy_note": ("I tuoi dati sono visibili solo all'agenzia e al referente del gruppo, non agli altri partecipanti.",
+                     "Your data is visible only to the agency and the group representative, not to other participants."),
+    "save_link": ("Salva questa pagina nei preferiti: è il tuo link personale.", "Bookmark this page: it is your personal link."),
+    "hello": ("Ciao {name}", "Hi {name}"),
+    "my_todo": ("Le mie cose da fare", "My to-do list"),
+    "i_did_it": ("Fatto ✓", "Done ✓"),
+    "undo": ("Annulla", "Undo"),
+    "verified_by_agency": ("Verificato dall'agenzia", "Verified by the agency"),
+    "waiting_verification": ("Inviato, in verifica", "Sent, being checked"),
+    "nothing_to_do": ("Niente da fare per ora 🎉", "Nothing to do for now 🎉"),
+    "organised_by": ("Organizzato da {agency}", "Organised by {agency}"),
+    "contact_rep": ("Per domande scrivi al referente: {rep}", "For questions contact your representative: {rep}"),
+    "link_not_found": ("Link non valido o scaduto. Chiedi un nuovo link al referente del gruppo.",
+                       "Invalid or expired link. Ask your group representative for a new one."),
+
+    # --- rep
+    "rep_title": ("Pagina del referente", "Representative's page"),
+    "rep_sub": ("Qui approvi i preventivi e vedi lo stato del gruppo.", "Here you approve quotes and see the group's status."),
+    "approve": ("Approva questa versione", "Approve this version"),
+    "approve_confirm": ("Scrivi il tuo nome per confermare l'approvazione", "Type your name to confirm the approval"),
+    "group_status": ("Stato del gruppo", "Group status"),
+    "decision_log": ("Registro decisioni", "Decision log"),
+
+    # --- flashes
+    "fl_trip_created": ("Viaggio creato.", "Trip created."),
+    "fl_saved": ("Salvato.", "Saved."),
+    "fl_deleted": ("Eliminato.", "Deleted."),
+    "fl_quote_approved": ("Versione {v} approvata. È ora la versione ufficiale.", "Version {v} approved. It is now the official version."),
+    "fl_participants_added": ("{n} partecipanti aggiunti.", "{n} participants added."),
+    "fl_welcome": ("Benvenuto! Questa è la tua pagina personale.", "Welcome! This is your personal page."),
+
+    # --- activity log texts (stored already translated at write time is bad; we store keys)
+    "act_trip_created": ("ha creato il viaggio", "created the trip"),
+    "act_quote_added": ("ha registrato la versione {v} del preventivo", "logged quote version {v}"),
+    "act_quote_approved": ("ha approvato la versione {v} ({channel})", "approved version {v} ({channel})"),
+    "act_item_added": ("ha aggiunto alla checklist: {title}", "added to the checklist: {title}"),
+    "act_participants_added": ("ha aggiunto {n} partecipanti", "added {n} participants"),
+    "act_participant_joined": ("si è iscritto tramite il link del gruppo", "joined via the group link"),
+    "act_announcement": ("ha pubblicato una comunicazione", "published an announcement"),
+    "act_itinerary": ("ha aggiornato il programma: {title}", "updated the programme: {title}"),
+    "act_deadline_added": ("ha aggiunto la scadenza: {supplier}", "added the deadline: {supplier}"),
+    "act_deadline_done": ("ha segnato come fatta la scadenza: {supplier}", "marked the deadline as done: {supplier}"),
+    "act_task_done": ("ha completato: {title}", "completed: {title}"),
+    "act_task_verified": ("ha verificato {title} per {name}", "verified {title} for {name}"),
+}
+
+MONTHS = {
+    "it": ["gen", "feb", "mar", "apr", "mag", "giu", "lug", "ago", "set", "ott", "nov", "dic"],
+    "en": ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+}
+WEEKDAYS = {
+    "it": ["lun", "mar", "mer", "gio", "ven", "sab", "dom"],
+    "en": ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+}
+
+
+def translate(lang, key, **kw):
+    pair = STRINGS.get(key)
+    if not pair:
+        return key
+    s = pair[0] if lang == "it" else pair[1]
+    try:
+        return s.format(**kw) if kw else s
+    except (KeyError, IndexError):
+        return s

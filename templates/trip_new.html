@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}{{ t('new_trip') }}{% endblock %}
+{% block mainclass %}narrow{% endblock %}
+{% block content %}
+<div class="card">
+  <h1>{{ t('new_trip') }}</h1>
+  <form method="post" class="form">
+    <input type="hidden" name="csrf" value="{{ csrf }}">
+    <label>{{ t('trip_title') }}<input name="title" required placeholder="{{ t('trip_title_ph') }}"></label>
+    <label>{{ t('destination') }}<input name="destination"></label>
+    <div class="row2">
+      <label>{{ t('start_date') }}<input type="date" name="start_date"></label>
+      <label>{{ t('end_date') }}<input type="date" name="end_date"></label>
+    </div>
+    <div class="row2">
+      <label>{{ t('rep_name') }}<input name="rep_name"></label>
+      <label>{{ t('rep_email') }} <span class="muted">({{ t('optional') }})</span><input type="email" name="rep_email"></label>
+    </div>
+    <button class="btn primary">{{ t('save') }}</button>
+  </form>
+</div>
+{% endblock %}

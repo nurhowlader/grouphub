@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}{{ trip.title }}{% endblock %}
+{% block brand %}<span class="brand"><span class="logo">G</span>{{ trip.agency.name }}</span>{% endblock %}
+{% block nav %}{% endblock %}
+{% block mainclass %}narrow{% endblock %}
+{% block content %}
+<div class="card join">
+  <p class="eyebrow">{{ trip.destination }}{% if trip.start_date %} · {{ fmt_date(trip.start_date) }}{% endif %}</p>
+  <h1>{{ trip.title }}</h1>
+  <h3>{{ t('join_title') }}</h3>
+  <p class="muted">{{ t('join_sub') }}</p>
+  <form method="post" class="form">
+    <input type="hidden" name="csrf" value="{{ csrf }}">
+    <label>{{ t('your_name') }}<input name="name" required autocomplete="name"></label>
+    <label>{{ t('email') }}<input type="email" name="email" required autocomplete="email"></label>
+    <button class="btn primary big">{{ t('join_btn') }} →</button>
+  </form>
+  <p class="small muted">🔒 {{ t('privacy_note') }}</p>
+</div>
+{% endblock %}

@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% import "_macros.html" as m with context %}
+{% block title %}{{ trip.title }}{% endblock %}
+{% block brand %}<span class="brand"><span class="logo">G</span>{{ trip.agency.name }}</span>{% endblock %}
+{% block nav %}{% endblock %}
+{% block bodyclass %}mobile{% endblock %}
+{% block mainclass %}narrow{% endblock %}
+{% block content %}
+<section class="p-hero">
+  <p class="eyebrow">{{ trip.destination }}</p>
+  <h1>{{ trip.title }}</h1>
+  <p>{{ t('hello', name=p.name.split(' ')[0]) }} 👋
+    {% if trip.start_date %}· {{ fmt_date(trip.start_date) }}{% if trip.end_date %} – {{ fmt_date(trip.end_date) }}{% endif %}{% endif %}</p>
+  {% if trip.days_to_departure is not none and trip.days_to_departure >= 0 %}
+    <div class="countdown inline"><b>{{ trip.days_to_departure }}</b> <span>{{ t('days_to_departure') }}</span></div>
+  {% endif %}
+</section>
+
+<p class="hint small">🔖 {{ t('save_link') }}</p>
+
+<div class="card" id="todo">
+  <h2>{{ t('my_todo') }}</h2>
+  {% if not trip.items %}<p class="muted">{{ t('nothing_to_do') }}</p>{% endif %}
+  {% for it in trip.items %}{% set st = p.status_for(it.id) %}
+    <div class="ptodo st-{{ st }} {{ 'late' if it.is_overdue and st == 'todo' }}">
+      <div class="todo-body">
+        <span class="kind {{ it.kind }}">{{ t('kind_' + it.kind) }}</span>
+        <b>{{ it.title }}</b>{% if it.amount %} · {{ fmt_money(it.amount) }}{% endif %}
+        {% if it.due_date %}<p class="small">{{ t('due_date') }}: <b>{{ fmt_date(it.due_date) }}</b>
+          ({{ rel_days((it.due_date - today).days) }}){% if it.is_overdue and st == 'todo' %} <span class="badge late">{{ t('overdue') }}</span>{% endif %}</p>{% endif %}
+        {% if it.description %}<p class="small muted">{{ it.description }}</p>{% endif %}
+      </div>
+      <div class="todo-action">
+        {% if st == 'verified' %}<span class="badge approved">✓ {{ t('verified_by_agency') }}</span>
+        {% else %}
+        <form method="post" action="{{ url_for('participant_task', token=p.token, iid=it.id) }}">
+          <input type="hidden" name="csrf" value="{{ csrf }}">
+          {% if st == 'todo' %}<button class="btn primary">{{ t('i_did_it') }}</button>
+          {% else %}<span class="small ok-text">{{ t('waiting_verification') }}</span><br><button class="link-btn small">{{ t('undo') }}</button>{% endif %}
+        </form>
+        {% endif %}
+      </div>
+    </div>
+  {% endfor %}
+</div>
+
+<div class="card">
+  <h2>{{ t('announcements') }}</h2>
+  {{ m.announcements_view(trip.announcements) }}
+</div>
+
+<div class="card">
+  <h2>{{ t('itinerary') }}</h2>
+  {{ m.itinerary_view(trip.itinerary) }}
+</div>
+
+<p class="small muted center">{{ t('organised_by', agency=trip.agency.name) }}
+  {% if trip.rep_name %}<br>{{ t('contact_rep', rep=trip.rep_name) }}{% endif %}</p>
+{% endblock %}

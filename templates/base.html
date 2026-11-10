@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="{{ lang }}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}{{ APP_NAME }}{% endblock %} · {{ APP_NAME }}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='46' fill='%230e5a5f'/><text x='50' y='66' font-size='50' text-anchor='middle' fill='white' font-family='sans-serif'>G</text></svg>">
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    {% for ev in datalayer %}window.dataLayer.push({{ ev|tojson }});
+    {% endfor %}
+  </script>
+  {% if GTM_ID %}
+  <!-- Google Tag Manager (L08) -->
+  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','{{ GTM_ID }}');</script>
+  {% endif %}
+</head>
+<body class="{% block bodyclass %}{% endblock %}">
+  {% if GTM_ID %}<noscript><iframe src="https://www.googletagmanager.com/ns.html?id={{ GTM_ID }}" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>{% endif %}
+
+  {% if user and user.agency.is_demo %}
+  <div class="demo-banner">{{ t('demo_banner') }} <a href="{{ url_for('signup', from_demo=1) }}">{{ t('demo_cta') }} →</a></div>
+  {% endif %}
+
+  <header class="topbar">
+    <div class="wrap topbar-inner">
+      {% block brand %}<a class="brand" href="{{ url_for('trips') if user else url_for('landing') }}"><span class="logo">G</span>{{ APP_NAME }}</a>{% endblock %}
+      <nav class="nav">
+        {% block nav %}
+        {% if user %}
+          <a href="{{ url_for('trips') }}">{{ t('my_trips') }}</a>
+          <span class="muted small hide-sm">{{ user.agency.name }}</span>
+          <a href="{{ url_for('logout') }}">{{ t('logout') }}</a>
+        {% endif %}
+        {% endblock %}
+        <span class="lang">
+          <a href="{{ url_for('set_lang', code='it') }}" class="{{ 'on' if lang=='it' }}">IT</a>
+          <a href="{{ url_for('set_lang', code='en') }}" class="{{ 'on' if lang=='en' }}">EN</a>
+        </span>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap {% block mainclass %}{% endblock %}">
+    {% with msgs = get_flashed_messages(with_categories=true) %}
+      {% for cat, m in msgs %}<div class="flash {{ cat }}">{{ m }}</div>{% endfor %}
+    {% endwith %}
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="footer wrap muted small">{{ APP_NAME }} · MVP · Lean Startup Lab 2026</footer>
+
+  <script>
+    const CSRF = "{{ csrf }}";
+    // copy buttons: <button data-copy="text" data-track="event_name" data-trip="id">
+    document.addEventListener('click', async (e) => {
+      const b = e.target.closest('[data-copy]');
+      if (!b) return;
+      e.preventDefault();
+      try { await navigator.clipboard.writeText(b.dataset.copy); }
+      catch (_) { const ta = document.createElement('textarea'); ta.value = b.dataset.copy; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove(); }
+      const old = b.textContent; b.textContent = "{{ t('copied') }}"; setTimeout(() => b.textContent = old, 1500);
+      if (b.dataset.track) {
+        window.dataLayer.push({event: 'app_event', event_name: b.dataset.track, event_params: {trip_id: b.dataset.trip}});
+        if (b.dataset.trip) fetch('/trips/' + b.dataset.trip + '/track', {method: 'POST', headers: {'Content-Type': 'application/x-www-form-urlencoded'}, body: 'csrf=' + CSRF + '&event=' + b.dataset.track});
+      }
+    });
+    // links that should also be tracked (e.g. WhatsApp)
+    document.addEventListener('click', (e) => {
+      const a = e.target.closest('a[data-track]');
+      if (!a) return;
+      window.dataLayer.push({event: 'app_event', event_name: a.dataset.track, event_params: {trip_id: a.dataset.trip}});
+      if (a.dataset.trip) navigator.sendBeacon('/trips/' + a.dataset.trip + '/track', new URLSearchParams({csrf: CSRF, event: a.dataset.track}));
+    });
+  </script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

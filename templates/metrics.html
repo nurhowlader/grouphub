@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Metrics{% endblock %}
+{% block content %}
+<div class="page-head">
+  <h1>Metrics <span class="muted small">({{ n_events }} events{{ ', incl. demo' if include_demo else ', demo excluded' }})</span></h1>
+  <a class="btn small" href="?key={{ request.args.key }}&demo={{ '0' if include_demo else '1' }}">{{ 'Exclude' if include_demo else 'Include' }} demo sandboxes</a>
+</div>
+
+<div class="card">
+  <h3>Agency funnel by sign-up cohort (week)</h3>
+  <p class="small muted">Copy these into the 4.1 Metrics Tracker every week. One row = agencies that signed up in that ISO week.</p>
+  <table class="list metrics">
+    <tr><th>Cohort</th><th>Signed up</th><th>Created trip</th><th>Added quote / checklist</th><th>Shared a link</th><th>≥1 participant joined</th><th>Quote approved</th><th>Active in week 2+</th></tr>
+    {% for wk, c in cohorts.items() %}
+    <tr><td>{{ wk }}</td><td>{{ c.signed_up }}</td>
+      {% for k in ['trip','quote_or_item','shared','joined','approved','week2'] %}
+      <td>{{ c[k] }} <span class="muted small">{{ (100 * c[k] / c.signed_up)|round|int if c.signed_up else 0 }}%</span></td>
+      {% endfor %}</tr>
+    {% endfor %}
+  </table>
+</div>
+
+<div class="card">
+  <h3>Events per week</h3>
+  <div class="matrix-wrap">
+  <table class="list metrics">
+    <tr><th>Event</th><th>Total</th>{% for w in weeks %}<th>{{ w }}</th>{% endfor %}</tr>
+    {% for name, n in totals.items() %}
+    <tr><td>{{ name }}{% if name in key_events %} ★{% endif %}</td><td><b>{{ n }}</b></td>
+      {% for w in weeks %}<td>{{ weekly[name].get(w, '') }}</td>{% endfor %}</tr>
+    {% endfor %}
+  </table>
+  </div>
+  <p class="small muted">★ = register as GA4 key event.</p>
+</div>
+{% endblock %}

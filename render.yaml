@@ -1,0 +1,19 @@
+# Render Blueprint: Render reads this file when you choose "New > Blueprint".
+services:
+  - type: web
+    name: grouphub
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app --workers 2 --timeout 60
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.7
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DATABASE_URL
+        sync: false        # paste your Neon connection string in the Render dashboard
+      - key: ADMIN_KEY
+        sync: false        # any password; opens /admin/metrics?key=...
+      - key: GTM_ID
+        sync: false        # GTM-XXXXXXX from Google Tag Manager

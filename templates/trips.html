@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}{{ t('my_trips') }}{% endblock %}
+{% block content %}
+<div class="page-head">
+  <h1>{{ t('my_trips') }}</h1>
+  <a class="btn primary" href="{{ url_for('trip_new') }}">+ {{ t('new_trip') }}</a>
+</div>
+{% if not trips %}
+  <div class="empty card">{{ t('no_trips') }}</div>
+{% endif %}
+<div class="grid">
+  {% for tr in trips %}
+  {% set c = completion(tr) %}
+  <a class="card trip-card" href="{{ url_for('trip_view', trip_id=tr.id) }}">
+    <h3>{{ tr.title }}</h3>
+    <p class="muted">{{ tr.destination }}{% if tr.start_date %} · {{ fmt_date(tr.start_date) }}{% endif %}</p>
+    <p class="small">
+      {% if tr.days_to_departure is not none %}
+        {% if tr.days_to_departure >= 0 %}<span class="pill">{{ t('departure_in', n=tr.days_to_departure) }}</span>{% else %}<span class="pill">{{ t('departed') }}</span>{% endif %}
+      {% endif %}
+      <span class="pill">{{ tr.participants|length }} {{ t('participants')|lower }}</span>
+    </p>
+    {% if c is not none %}
+      <div class="bar"><span style="width: {{ c }}%"></span></div>
+      <p class="small muted">{{ t('completion') }}: {{ c }}%</p>
+    {% endif %}
+  </a>
+  {% endfor %}
+</div>
+{% endblock %}

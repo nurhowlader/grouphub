@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% import "_macros.html" as m with context %}
+{% block title %}{{ t('rep_title') }} · {{ trip.title }}{% endblock %}
+{% block brand %}<span class="brand"><span class="logo">G</span>{{ trip.agency.name }}</span>{% endblock %}
+{% block nav %}{% endblock %}
+{% block content %}
+<div class="trip-head">
+  <div>
+    <p class="eyebrow">{{ t('rep_title') }}</p>
+    <h1>{{ trip.title }}</h1>
+    <p class="muted">{{ trip.destination }}{% if trip.start_date %} · {{ fmt_date(trip.start_date) }}{% endif %} · {{ t('rep_sub') }}</p>
+  </div>
+  {% if trip.days_to_departure is not none and trip.days_to_departure >= 0 %}
+    <div class="countdown"><b>{{ trip.days_to_departure }}</b><span>{{ t('days_to_departure') }}</span></div>
+  {% endif %}
+</div>
+
+<div class="cols">
+  <div class="col-main">
+    <div class="card">
+      <h2>{{ t('tab_quotes') }}</h2>
+      {% if not trip.quotes %}<p class="muted">{{ t('no_quotes') }}</p>{% endif %}
+      {% for q in trip.quotes %}
+        {% call m.quote_card(q) %}
+          {% if q.status == 'sent' %}
+          <form method="post" action="{{ url_for('rep_approve', token=trip.rep_token, qid=q.id) }}" class="form approve-form">
+            <input type="hidden" name="csrf" value="{{ csrf }}">
+            <label class="small">{{ t('approve_confirm') }}<input name="name" required value=""></label>
+            <button class="btn primary">✓ {{ t('approve') }} v{{ q.version_no }}</button>
+          </form>
+          {% endif %}
+        {% endcall %}
+      {% endfor %}
+    </div>
+
+    <div class="card">
+      <h2>{{ t('group_status') }}</h2>
+      <p class="small muted">{{ trip.participants|length }} {{ t('participants')|lower }}</p>
+      {% if not trip.items %}<p class="muted">{{ t('no_items') }}</p>{% endif %}
+      {% for it in trip.items %}{% set pr = progress[it.id] %}
+        <div class="rep-item">
+          <div class="prog-row">
+            <div class="prog-label"><b>{{ it.title }}</b>
+              <span class="small muted">{% if it.due_date %}{{ fmt_date(it.due_date) }}{% endif %}
+              {% if it.is_overdue and pr.missing %} <span class="badge late">{{ t('overdue') }}</span>{% endif %}</span></div>
+            <div class="bar"><span style="width: {{ pr.pct }}%"></span></div>
+            <span class="small prog-num">{{ pr.done }}/{{ pr.total }}</span>
+          </div>
+          {% if pr.missing %}
+            <p class="small"><span class="muted">{{ t('missing') }}:</span> {{ pr.missing|map(attribute='name')|join(', ') }}</p>
+          {% else %}<p class="small ok-text">{{ t('all_done') }}</p>{% endif %}
+        </div>
+      {% endfor %}
+      <p class="label mt">{{ t('join_link') }}</p>
+      <div class="copy-field"><input readonly value="{{ join_url }}"><button class="btn small" data-copy="{{ join_url }}" data-track="invite_link_copied">{{ t('copy') }}</button></div>
+    </div>
+  </div>
+
+  <aside class="col-side">
+    <div class="card">
+      <h3>{{ t('next_deadlines') }}</h3>
+      {{ m.deadline_rows(deadlines) }}
+    </div>
+    <div class="card">
+      <h3>{{ t('decision_log') }}</h3>
+      {{ m.activity_list(decisions) }}
+    </div>
+    <div class="card">
+      <h3>{{ t('announcements') }}</h3>
+      {{ m.announcements_view(trip.announcements[:3]) }}
+    </div>
+  </aside>
+</div>
+{% endblock %}

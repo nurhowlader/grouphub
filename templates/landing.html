@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}{{ t('tagline') }}{% endblock %}
+{% block nav %}<a href="{{ url_for('login') }}">{{ t('login') }}</a>{% endblock %}
+{% block content %}
+<section class="hero">
+  <p class="eyebrow">{{ t('tagline') }}</p>
+  <h1>{{ t('hero_title') }}</h1>
+  <p class="lead">{{ t('hero_sub') }}</p>
+  <div class="cta-row">
+    <a class="btn primary big" href="{{ url_for('demo') }}">{{ t('try_demo') }}</a>
+    <a class="btn big" href="{{ url_for('signup') }}">{{ t('signup') }}</a>
+  </div>
+</section>
+
+<section class="features">
+  {% for i in range(1, 6) %}
+  <div class="feature">
+    <div class="num">{{ i }}</div>
+    <h3>{{ t('f%d_t' % i) }}</h3>
+    <p>{{ t('f%d_d' % i) }}</p>
+  </div>
+  {% endfor %}
+</section>
+{% endblock %}

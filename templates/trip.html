@@ -1,0 +1,343 @@
+{% extends "base.html" %}
+{% import "_macros.html" as m with context %}
+{% block title %}{{ trip.title }}{% endblock %}
+{% block content %}
+<div class="trip-head">
+  <div>
+    <a class="small muted" href="{{ url_for('trips') }}">← {{ t('my_trips') }}</a>
+    <h1>{{ trip.title }}</h1>
+    <p class="muted">{{ trip.destination }}
+      {% if trip.start_date %} · {{ fmt_date(trip.start_date) }}{% if trip.end_date %} – {{ fmt_date(trip.end_date) }}{% endif %}{% endif %}
+      {% if trip.rep_name %} · {{ t('rep_name') }}: <b>{{ trip.rep_name }}</b>{% endif %}</p>
+  </div>
+  {% if trip.days_to_departure is not none and trip.days_to_departure >= 0 %}
+    <div class="countdown"><b>{{ trip.days_to_departure }}</b><span>{{ t('days_to_departure') }}</span></div>
+  {% endif %}
+</div>
+
+<nav class="tabs">
+  {% for tb in tabs %}
+    <a href="{{ url_for('trip_view', trip_id=trip.id, tab=tb) }}" class="{{ 'on' if tb == tab }}">{{ t('tab_' + tb) }}
+      {% if tb == 'participants' %}<span class="count">{{ trip.participants|length }}</span>{% endif %}
+      {% if tb == 'quotes' %}<span class="count">{{ trip.quotes|length }}</span>{% endif %}
+    </a>
+  {% endfor %}
+</nav>
+
+{# ============================================================ OVERVIEW #}
+{% if tab == 'overview' %}
+<div class="cols">
+  <div class="col-main">
+    {% if not trip.quotes or not trip.items or not trip.participants %}
+    <div class="card getting-started">
+      <h3>{{ t('getting_started') }}</h3>
+      <ol>
+        <li class="{{ 'done' if trip.quotes }}"><a href="?tab=quotes">{{ t('gs_1') }}</a></li>
+        <li class="{{ 'done' if trip.items }}"><a href="?tab=checklist">{{ t('gs_2') }}</a></li>
+        <li class="{{ 'done' if trip.participants }}"><a href="?tab=participants">{{ t('gs_3') }}</a></li>
+      </ol>
+    </div>
+    {% endif %}
+
+    <div class="stats">
+      <div class="stat"><span class="big">{{ trip.participants|length }}</span><span>{{ t('participants') }}</span>
+        <span class="small muted">{{ trip.participants|selectattr('joined_via_link')|list|length }} {{ t('via_link') }}</span></div>
+      <div class="stat"><span class="big">{{ completion if completion is not none else '—' }}{% if completion is not none %}%{% endif %}</span><span>{{ t('completion') }}</span></div>
+      <div class="stat"><span class="big">{% if trip.official_quote %}v{{ trip.official_quote.version_no }}{% else %}—{% endif %}</span><span>{{ t('official_quote') }}</span>
+        {% if trip.official_quote %}<span class="small muted">{{ fmt_money(trip.official_quote.price_per_person) }} / pax</span>{% endif %}</div>
+    </div>
+
+    <div class="card">
+      <h3>{{ t('tab_checklist') }}</h3>
+      {% if not trip.items %}<p class="muted">{{ t('no_items') }}</p>{% endif %}
+      {% for it in trip.items %}{% set pr = progress[it.id] %}
+        <div class="prog-row">
+          <div class="prog-label"><b>{{ it.title }}</b>
+            <span class="small muted">{% if it.due_date %}{{ t('due_date') }} {{ fmt_date(it.due_date) }}{% endif %}
+              {% if it.is_overdue and pr.done < pr.total %} <span class="badge late">{{ t('overdue') }}</span>{% endif %}</span></div>
+          <div class="bar"><span style="width: {{ pr.pct }}%"></span></div>
+          <span class="small prog-num">{{ pr.done }}/{{ pr.total }}</span>
+        </div>
+      {% endfor %}
+    </div>
+
+    <div class="card">
+      <h3>{{ t('recent_activity') }}</h3>
+      {{ m.activity_list(trip.activity, 8) }}
+      <a class="small" href="?tab=history">{{ t('tab_history') }} →</a>
+    </div>
+  </div>
+
+  <aside class="col-side">
+    <div class="card">
+      <h3>{{ t('share_links') }}</h3>
+      <p class="label">{{ t('join_link') }}</p>
+      <div class="copy-field"><input readonly value="{{ join_url }}"><button class="btn small" data-copy="{{ join_url }}" data-track="invite_link_copied" data-trip="{{ trip.id }}">{{ t('copy') }}</button></div>
+      <p class="small muted">{{ t('join_link_help') }}</p>
+      <p class="label">{{ t('rep_link') }}</p>
+      <div class="copy-field"><input readonly value="{{ rep_url }}"><button class="btn small" data-copy="{{ rep_url }}" data-track="rep_link_copied" data-trip="{{ trip.id }}">{{ t('copy') }}</button></div>
+      <p class="small muted">{{ t('rep_link_help') }}</p>
+    </div>
+    <div class="card">
+      <h3>{{ t('next_deadlines') }}</h3>
+      {{ m.deadline_rows(deadlines[:5]) }}
+    </div>
+  </aside>
+</div>
+{% endif %}
+
+{# ============================================================ QUOTES (US2) #}
+{% if tab == 'quotes' %}
+<div class="cols">
+  <div class="col-main">
+    <p class="muted">{{ t('quotes_help') }}</p>
+    {% if not trip.quotes %}<div class="card empty">{{ t('no_quotes') }}</div>{% endif %}
+    {% for q in trip.quotes %}
+      {% call m.quote_card(q) %}
+        {% if q.status == 'sent' %}
+        <details class="record">
+          <summary>{{ t('record_approval') }}</summary>
+          <form method="post" action="{{ url_for('quote_record_approval', trip_id=trip.id, qid=q.id) }}" class="form inline-form">
+            <input type="hidden" name="csrf" value="{{ csrf }}">
+            <label>{{ t('approved_by') }}<input name="approved_by" value="{{ trip.rep_name or '' }}" required></label>
+            <label>{{ t('channel') }}
+              <select name="channel">
+                <option value="email">{{ t('ch_email') }}</option>
+                <option value="whatsapp">{{ t('ch_whatsapp') }}</option>
+                <option value="phone">{{ t('ch_phone') }}</option>
+              </select></label>
+            <label>{{ t('note') }}<input name="note"></label>
+            <button class="btn primary small">{{ t('save') }}</button>
+          </form>
+        </details>
+        {% endif %}
+      {% endcall %}
+    {% endfor %}
+  </div>
+  <aside class="col-side">
+    <div class="card">
+      <h3>{{ t('add_quote') }}</h3>
+      <form method="post" action="{{ url_for('quote_add', trip_id=trip.id) }}" class="form">
+        <input type="hidden" name="csrf" value="{{ csrf }}">
+        <label>{{ t('quote_title') }}<input name="title" placeholder="{{ t('quote_title_ph') }}"></label>
+        <div class="row2">
+          <label>{{ t('price_pp') }}<input name="price_per_person" inputmode="decimal"></label>
+          <label>{{ t('pax') }}<input name="pax" inputmode="numeric" value="{{ trip.participants|length or '' }}"></label>
+        </div>
+        <label>{{ t('changes') }}<textarea name="changes" rows="3"></textarea></label>
+        <label>{{ t('link_pdf') }} <span class="muted">({{ t('optional') }})</span><input name="link_url" type="url" placeholder="https://"></label>
+        <button class="btn primary">{{ t('add') }} v{{ (trip.quotes|map(attribute='version_no')|max if trip.quotes else 0) + 1 }}</button>
+      </form>
+    </div>
+  </aside>
+</div>
+{% endif %}
+
+{# ============================================================ CHECKLIST (US3) #}
+{% if tab == 'checklist' %}
+<div class="card">
+  <h3>{{ t('add_item') }}</h3>
+  <form method="post" action="{{ url_for('item_add', trip_id=trip.id) }}" class="form grid-form">
+    <input type="hidden" name="csrf" value="{{ csrf }}">
+    <label>{{ t('kind') }}<select name="kind">
+      <option value="document">{{ t('kind_document') }}</option>
+      <option value="payment">{{ t('kind_payment') }}</option>
+      <option value="other">{{ t('kind_other') }}</option></select></label>
+    <label class="wide">{{ t('item_title') }}<input name="title" required placeholder="{{ t('item_title_ph') }}"></label>
+    <label>{{ t('due_date') }}<input type="date" name="due_date"></label>
+    <label>{{ t('amount') }}<input name="amount" inputmode="decimal" placeholder="{{ t('optional') }}"></label>
+    <label class="full">{{ t('description') }}<input name="description"></label>
+    <button class="btn primary">{{ t('add') }}</button>
+  </form>
+</div>
+
+{% if not trip.items %}<div class="card empty">{{ t('no_items') }}</div>
+{% elif not trip.participants %}<div class="card empty">{{ t('no_participants_yet') }} <a href="?tab=participants">→</a></div>
+{% else %}
+<div class="card">
+  <div class="items-summary">
+  {% for it in trip.items %}{% set pr = progress[it.id] %}
+    <div class="item-sum {{ 'late' if it.is_overdue and pr.missing }}">
+      <div class="item-sum-head">
+        <span class="kind {{ it.kind }}">{{ t('kind_' + it.kind) }}</span>
+        <form method="post" action="{{ url_for('item_delete', trip_id=trip.id, iid=it.id) }}" onsubmit="return confirm('{{ t('confirm_delete') }}')">
+          <input type="hidden" name="csrf" value="{{ csrf }}"><button class="link-btn small" title="{{ t('delete') }}">✕</button></form>
+      </div>
+      <b>{{ it.title }}</b>
+      <p class="small muted">{% if it.amount %}{{ fmt_money(it.amount) }} · {% endif %}{% if it.due_date %}{{ t('due_date') }}: {{ fmt_date(it.due_date) }} ({{ rel_days((it.due_date - today).days) }}){% endif %}</p>
+      <div class="bar"><span style="width: {{ pr.pct }}%"></span></div>
+      <p class="small"><b>{{ pr.done }}/{{ pr.total }}</b> · {{ t('st_verified') }}: {{ pr.verified }}</p>
+      {% if pr.missing %}
+        {% set txt, wa = reminders[it.id] %}
+        <div class="btn-row">
+          <button class="btn small" data-copy="{{ txt }}" data-track="reminder_copied" data-trip="{{ trip.id }}">{{ t('copy_reminder') }} ({{ pr.missing|length }})</button>
+          <a class="btn small wa" href="{{ wa }}" target="_blank" rel="noopener" data-track="reminder_whatsapp" data-trip="{{ trip.id }}">WhatsApp</a>
+        </div>
+      {% else %}<p class="small ok-text">{{ t('all_done') }}</p>{% endif %}
+    </div>
+  {% endfor %}
+  </div>
+</div>
+
+<div class="card">
+  <p class="small muted">{{ t('matrix_help') }}
+    <span class="legend"><span class="cell todo">·</span> {{ t('st_todo') }} <span class="cell submitted">✓</span> {{ t('st_submitted') }} <span class="cell verified">✓✓</span> {{ t('st_verified') }}</span></p>
+  <div class="matrix-wrap">
+  <table class="matrix">
+    <thead><tr><th>{{ t('participants') }}</th>{% for it in trip.items %}<th title="{{ it.title }}">{{ it.title|truncate(22, True, '…') }}</th>{% endfor %}</tr></thead>
+    <tbody>
+    {% for p in trip.participants %}
+      <tr><td class="pname">{{ p.name }}</td>
+      {% for it in trip.items %}{% set st = p.status_for(it.id) %}
+        <td><form method="post" action="{{ url_for('task_cycle', trip_id=trip.id, pid=p.id, iid=it.id) }}" class="cell-form">
+          <input type="hidden" name="csrf" value="{{ csrf }}">
+          <button class="cell {{ st }}" title="{{ t('st_' + st) }}">{{ {'todo': '·', 'submitted': '✓', 'verified': '✓✓'}[st] }}</button></form></td>
+      {% endfor %}</tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  </div>
+</div>
+{% endif %}
+{% endif %}
+
+{# ============================================================ PARTICIPANTS #}
+{% if tab == 'participants' %}
+<div class="cols">
+  <div class="col-main card">
+    <h3>{{ t('participants') }} ({{ trip.participants|length }})</h3>
+    {% if not trip.participants %}<p class="muted">{{ t('no_participants_yet') }}</p>{% endif %}
+    <table class="list">
+      {% for p in trip.participants %}
+      <tr>
+        <td><b>{{ p.name }}</b><br><span class="small muted">{{ p.email }}</span></td>
+        <td class="small muted">{{ t('via_link') if p.joined_via_link else t('added_by_agency') }}<br>
+          {{ t('last_seen') }}: {{ fmt_dt(p.last_seen_at) if p.last_seen_at else t('never') }}</td>
+        <td class="right nowrap">
+          <button class="btn small" data-copy="{{ url_for('participant_page', token=p.token, _external=True) }}" data-track="personal_link_copied" data-trip="{{ trip.id }}">{{ t('personal_link') }}</button>
+          <form class="inline" method="post" action="{{ url_for('participant_delete', trip_id=trip.id, pid=p.id) }}" onsubmit="return confirm('{{ t('confirm_delete') }}')">
+            <input type="hidden" name="csrf" value="{{ csrf }}"><button class="link-btn small">✕</button></form>
+        </td>
+      </tr>
+      {% endfor %}
+    </table>
+  </div>
+  <aside class="col-side">
+    <div class="card">
+      <h3>{{ t('add_participants') }}</h3>
+      <form method="post" action="{{ url_for('participants_add', trip_id=trip.id) }}" class="form">
+        <input type="hidden" name="csrf" value="{{ csrf }}">
+        <textarea name="bulk" rows="7" placeholder="Mario Rossi, mario@email.it&#10;Anna Verdi, anna@email.it"></textarea>
+        <p class="small muted">{{ t('bulk_help') }}</p>
+        <button class="btn primary">{{ t('add') }}</button>
+      </form>
+    </div>
+    <div class="card">
+      <p class="label">{{ t('join_link') }}</p>
+      <div class="copy-field"><input readonly value="{{ join_url }}"><button class="btn small" data-copy="{{ join_url }}" data-track="invite_link_copied" data-trip="{{ trip.id }}">{{ t('copy') }}</button></div>
+      <p class="small muted">{{ t('join_link_help') }}</p>
+    </div>
+  </aside>
+</div>
+{% endif %}
+
+{# ============================================================ PROGRAMME & ANNOUNCEMENTS #}
+{% if tab == 'info' %}
+<div class="cols">
+  <div class="col-main">
+    <div class="card">
+      <h3>{{ t('new_announcement') }}</h3>
+      <form method="post" action="{{ url_for('announcement_add', trip_id=trip.id) }}" class="form">
+        <input type="hidden" name="csrf" value="{{ csrf }}">
+        <textarea name="body" rows="3" required placeholder="{{ t('announcement_ph') }}"></textarea>
+        <button class="btn primary">{{ t('publish') }}</button>
+      </form>
+      <h3 class="mt">{{ t('announcements') }}</h3>
+      {{ m.announcements_view(trip.announcements, True, trip) }}
+    </div>
+    <div class="card">
+      <h3>{{ t('itinerary') }}</h3>
+      {{ m.itinerary_view(trip.itinerary, True, trip) }}
+    </div>
+  </div>
+  <aside class="col-side">
+    <div class="card">
+      <h3>{{ t('add_itinerary') }}</h3>
+      <form method="post" action="{{ url_for('itinerary_add', trip_id=trip.id) }}" class="form">
+        <input type="hidden" name="csrf" value="{{ csrf }}">
+        <div class="row2">
+          <label>{{ t('day') }}<input type="date" name="day" value="{{ trip.start_date.isoformat() if trip.start_date else '' }}"></label>
+          <label>{{ t('time') }}<input type="time" name="time"></label>
+        </div>
+        <label>{{ t('activity') }}<input name="title" required></label>
+        <label>{{ t('location') }}<input name="location"></label>
+        <label>{{ t('notes') }}<input name="notes"></label>
+        <button class="btn primary">{{ t('add') }}</button>
+      </form>
+    </div>
+  </aside>
+</div>
+{% endif %}
+
+{# ============================================================ SUPPLIER DEADLINES (US5) #}
+{% if tab == 'deadlines' %}
+<div class="cols">
+  <div class="col-main card">
+    <p class="small muted">{{ t('deadlines_help') }}</p>
+    {% if not trip.deadlines %}<p class="muted">{{ t('no_deadlines') }}</p>{% endif %}
+    <ul class="deadlines big">
+    {% for d in trip.deadlines %}
+      <li class="{{ 'done' if d.done else ('late' if d.days_left < 0 else ('soon' if d.days_left <= 14 else '')) }}">
+        <span class="dl-date">{{ fmt_date(d.due_date) }}<br><span class="small">{{ t('done') if d.done else rel_days(d.days_left) }}</span></span>
+        <span class="grow"><b>{{ d.supplier }}</b>{% if d.what %} · {{ d.what }}{% endif %}
+          {% if d.penalty %}<br><span class="small penalty">⚠ {{ d.penalty }}</span>{% endif %}</span>
+        <span class="nowrap">
+          <form class="inline" method="post" action="{{ url_for('deadline_toggle', trip_id=trip.id, did=d.id) }}">
+            <input type="hidden" name="csrf" value="{{ csrf }}"><button class="btn small">{{ t('reopen') if d.done else t('mark_done') }}</button></form>
+          <form class="inline" method="post" action="{{ url_for('deadline_delete', trip_id=trip.id, did=d.id) }}" onsubmit="return confirm('{{ t('confirm_delete') }}')">
+            <input type="hidden" name="csrf" value="{{ csrf }}"><button class="link-btn small">✕</button></form>
+        </span>
+      </li>
+    {% endfor %}
+    </ul>
+  </div>
+  <aside class="col-side">
+    <div class="card">
+      <h3>{{ t('add_deadline') }}</h3>
+      <form method="post" action="{{ url_for('deadline_add', trip_id=trip.id) }}" class="form">
+        <input type="hidden" name="csrf" value="{{ csrf }}">
+        <label>{{ t('supplier') }}<input name="supplier" required></label>
+        <label>{{ t('what') }}<input name="what"></label>
+        <label>{{ t('due_date') }}<input type="date" name="due_date" required></label>
+        <label>{{ t('penalty') }}<input name="penalty" placeholder="{{ t('penalty_ph') }}"></label>
+        <button class="btn primary">{{ t('add') }}</button>
+      </form>
+    </div>
+  </aside>
+</div>
+{% endif %}
+
+{# ============================================================ HISTORY (US1) #}
+{% if tab == 'history' %}
+<div class="card">
+  <h3>{{ t('tab_history') }}</h3>
+  {{ m.activity_list(trip.activity) }}
+</div>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script>
+  // matrix cells update without reloading the page
+  document.querySelectorAll('.cell-form').forEach(f => f.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = f.querySelector('button');
+    const r = await fetch(f.action, {method: 'POST', body: new FormData(f), headers: {'X-Requested-With': 'fetch'}});
+    if (!r.ok) return f.submit();
+    const j = await r.json();
+    btn.className = 'cell ' + j.status; btn.title = j.label;
+    btn.textContent = {todo: '·', submitted: '✓', verified: '✓✓'}[j.status];
+    window.dataLayer.push({event: 'app_event', event_name: j.status === 'verified' ? 'task_verified' : 'task_status_changed'});
+  }));
+</script>
+{% endblock %}
