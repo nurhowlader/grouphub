@@ -4,7 +4,7 @@ Univoy is one shared space for a group trip, used by the **agency**, the **group
 
 The full requirements are in [`docs/MVP_One_Pager.md`](docs/MVP_One_Pager.md): the problem, 5 user stories, what is out of scope, the stack, and the funnel.
 
-> **Name:** the product is called **Univoy** (logo in `static/logo.png`, colours navy `#0B1F3A` and orange `#E07A3F`). The GitHub repo, the folder and the Render service are still called `grouphub`, a technical name users never see. Renaming the Render service would change the public URL.
+> **Name:** the product is called **Univoy** (logo in `static/logo.png`, colours navy `#0B1F3A` and orange `#E07A3F`). The Render service is `univoy`, so the public URL is `univoy.onrender.com`. The GitHub repo, the local folder and the Neon project are still called `grouphub`; users never see these.
 
 The course's code lane (L06) is **VS Code → GitHub → Render**, with the database on **Neon** and measurement through **GTM → GA4** (L08).
 
@@ -78,7 +78,7 @@ You don't need to create any tables: the app creates them the first time it star
    - `DATABASE_URL`: the Neon string from step 3
    - `ADMIN_KEY`: any password you choose, for the metrics page
    - `GTM_ID`: leave it empty for now; you'll fill it in at step 5
-4. Click **Apply**. After 2–3 minutes you get a public URL like `https://grouphub-xxxx.onrender.com`. **That is the URL you submit.**
+4. Click **Apply**. After 2–3 minutes you get a public URL like `https://univoy.onrender.com`. **That is the URL you submit.**
 
 From then on, every `git push` to `main` redeploys automatically ("sync" on the L06 slide).
 
