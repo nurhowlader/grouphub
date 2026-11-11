@@ -1,4 +1,4 @@
-# GroupHub — MVP One-Pager (PRD)
+# Univoy — MVP One-Pager (PRD)
 
 Team 7 · Industry: Travel · Version 1.0 · 10 Nov 2026
 

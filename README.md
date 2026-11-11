@@ -1,8 +1,10 @@
-# GroupHub: MVP (Team 7 · Travel · Lean Startup Lab 2026)
+# Univoy: MVP (Team 7 · Travel · Lean Startup Lab 2026)
 
-GroupHub is one shared space for a group trip, used by the **agency**, the **group representative** and the **participants**. It holds the quote versions with in-app approval, the document and payment checklist per participant, the programme and announcements behind a no-login link, and the supplier deadlines with their penalties.
+Univoy is one shared space for a group trip, used by the **agency**, the **group representative** and the **participants**. It holds the quote versions with in-app approval, the document and payment checklist per participant, the programme and announcements behind a no-login link, and the supplier deadlines with their penalties.
 
 The full requirements are in [`docs/MVP_One_Pager.md`](docs/MVP_One_Pager.md): the problem, 5 user stories, what is out of scope, the stack, and the funnel.
+
+> **Name:** the product is called **Univoy** (logo in `static/logo.png`, colours navy `#0B1F3A` and orange `#E07A3F`). The GitHub repo, the folder and the Render service are still called `grouphub`, a technical name users never see. Renaming the Render service would change the public URL.
 
 The course's code lane (L06) is **VS Code → GitHub → Render**, with the database on **Neon** and measurement through **GTM → GA4** (L08).
 
@@ -21,7 +23,7 @@ python app.py
 ```
 
 Open http://localhost:5000 and click **"Prova la demo"**. Locally the app uses a SQLite file, so you don't need to set anything up.
-To get a fixed demo login, run `python seed.py`, then log in with `demo@grouphub.local` / `demo1234`.
+To get a fixed demo login, run `python seed.py`, then log in with `demo@univoy.local` / `demo1234`.
 
 ### Where things are
 | File | What it is (L06 terms) |
@@ -53,7 +55,7 @@ To get a fixed demo login, run `python seed.py`, then log in with `demo@grouphub
 ```bash
 git init
 git add .
-git commit -m "GroupHub MVP v1"
+git commit -m "Univoy MVP v1"
 git branch -M main
 git remote add origin https://github.com/<your-user>/grouphub.git
 git push -u origin main

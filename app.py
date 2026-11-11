@@ -1,4 +1,4 @@
-"""GroupHub — MVP for group-travel agencies (Team 7, Lean Startup Lab 2026).
+"""Univoy — MVP for group-travel agencies (Team 7, Lean Startup Lab 2026).
 
 Run locally:   python app.py            -> http://localhost:5000
 Production:    gunicorn app:app         (Render does this for you, see README.md)
@@ -35,7 +35,7 @@ elif db_url.startswith("postgresql://"):
 app.config["SQLALCHEMY_DATABASE_URI"] = db_url
 app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {"pool_pre_ping": True, "pool_recycle": 280}
 app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(days=90)
-APP_NAME = os.environ.get("APP_NAME", "GroupHub")
+APP_NAME = os.environ.get("APP_NAME", "Univoy")
 GTM_ID = os.environ.get("GTM_ID", "")            # e.g. GTM-XXXXXXX  (leave empty locally)
 ADMIN_KEY = os.environ.get("ADMIN_KEY", "")      # protects /admin/metrics
 

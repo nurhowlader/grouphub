@@ -3,6 +3,7 @@
 {% block content %}
 <div class="auth">
   <div class="card">
+    <img class="auth-logo" src="{{ url_for('static', filename='logo.png') }}" alt="{{ APP_NAME }}" width="119" height="96">
     <h1>{{ t('signup') if mode == 'signup' else t('login') }}</h1>
     <p class="sub">{{ t('signup_sub') if mode == 'signup' else t('login_sub') }}</p>
     <form method="post" class="form">

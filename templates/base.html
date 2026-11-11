@@ -7,8 +7,10 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}?v=2">
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='46' fill='%230e5a5f'/><text x='50' y='66' font-size='50' text-anchor='middle' fill='white' font-family='sans-serif'>G</text></svg>">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}?v=3">
+  <link rel="icon" type="image/png" href="{{ url_for('static', filename='favicon.png') }}">
+  <link rel="apple-touch-icon" href="{{ url_for('static', filename='apple-touch-icon.png') }}">
+  <meta name="theme-color" content="#0B1F3A">
   <script>
     window.dataLayer = window.dataLayer || [];
     {% for ev in datalayer %}window.dataLayer.push({{ ev|tojson }});
@@ -32,7 +34,7 @@
 
   <header class="topbar">
     <div class="wrap topbar-inner">
-      {% block brand %}<a class="brand" href="{{ url_for('trips') if user else url_for('landing') }}"><span class="logo">G</span><span class="brand-name">{{ APP_NAME }}</span></a>{% endblock %}
+      {% block brand %}<a class="brand" href="{{ url_for('trips') if user else url_for('landing') }}"><img class="logo" src="{{ url_for('static', filename='logo-mark.png') }}" alt="{{ APP_NAME }}" width="56" height="34"><span class="brand-name">{{ APP_NAME }}</span></a>{% endblock %}
       <nav class="nav">
         {% block nav %}
         {% if user %}

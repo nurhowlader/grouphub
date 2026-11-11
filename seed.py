@@ -20,7 +20,7 @@ NAMES = ["Giulia Bianchi", "Marco Rossi", "Francesca Romano", "Luca Colombo", "C
          "Paolo Lombardi"]
 
 
-FIXED_DEMO_EMAIL = "demo@grouphub.local"
+FIXED_DEMO_EMAIL = "demo@univoy.local"
 FIXED_DEMO_PASSWORD = "demo1234"
 
 

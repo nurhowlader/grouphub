@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% import "_macros.html" as m with context %}
 {% block title %}{{ t('rep_title') }} · {{ trip.title }}{% endblock %}
-{% block brand %}<span class="brand"><span class="logo">G</span><span class="brand-name">{{ trip.agency.name }}</span></span>{% endblock %}
+{% block brand %}<span class="brand"><img class="logo" src="{{ url_for('static', filename='logo-mark.png') }}" alt="{{ APP_NAME }}" width="56" height="34"><span class="brand-name">{{ trip.agency.name }}</span></span>{% endblock %}
 {% block nav %}{% endblock %}
 {% block content %}
 <div class="trip-head">
