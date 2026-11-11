@@ -91,15 +91,18 @@ The app already pushes every action into the `dataLayer` as
 
 1. **GA4:** at analytics.google.com, create a property and a Web data stream for your Render URL. Copy the **Measurement ID** (`G-...`).
 2. **GTM:** at tagmanager.google.com, create a container (Web) and copy its **ID** (`GTM-...`). Put it in Render as `GTM_ID`, then save. Render redeploys.
-3. In GTM:
-   - **Tag "GA4 – config":** Google tag, ID = your `G-...`, trigger = *Initialization – All Pages*.
-   - **Variables:** Data Layer Variables `event_name`, `event_params.actor_type`, `event_params.trip_id`, `event_params.is_demo`.
+3. In GTM, the fast way: **Admin → Import Container**, choose [`docs/gtm-container-univoy.json`](docs/gtm-container-univoy.json), workspace *Default*, option **Merge → Overwrite**. It creates:
+   - **Variable "GA4 Measurement ID"** (Constant): open it and replace `G-XXXXXXXXXX` with your ID.
+   - **Data Layer Variables** `event_name`, `actor_type`, `trip_id`, `is_demo`, `agency_id`.
    - **Trigger "app_event":** Custom Event, event name `app_event`.
-   - **Tag "GA4 – app events":** GA4 Event, event name = `{{event_name}}`, parameters `actor_type`, `trip_id`, `is_demo`; trigger = *app_event*.
-   - Check in **Preview** mode, then **Submit / Publish**.
+   - **Tag "GA4 - Google tag":** trigger *Initialization – All Pages* (also sends `page_view`).
+   - **Tag "GA4 - app events":** GA4 Event, event name `{{DLV - event_name}}` with the 4 parameters; trigger *app_event*.
+
+   (If the import fails, create the same 5 items by hand.) Check in **Preview** mode, then **Submit → Publish**.
 4. In GA4, **on day one** (GA4 doesn't apply these to data it already received):
-   - Admin → Custom definitions: add `actor_type`, `trip_id`, `is_demo` as event-scoped dimensions.
+   - Admin → Custom definitions: add `actor_type`, `trip_id`, `is_demo`, `agency_id` as event-scoped dimensions.
    - Admin → Key events: mark `sign_up`, `trip_created`, `participant_joined`, `task_marked_done`, `quote_approved`.
+   - Admin → Data retention: set event data retention to **14 months** (default is 2, too short for Explorations).
 5. Check that events arrive in **DebugView / Realtime**.
 
 Ad-blockers hide some GA traffic, so every event is **also** saved in the app's own database. Open `/admin/metrics?key=<ADMIN_KEY>` for exact numbers per week and the funnel by sign-up cohort, ready to copy into the **4.1 Metrics Tracker**. Demo sandboxes are excluded by default.

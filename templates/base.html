@@ -62,6 +62,7 @@
 
   <script>
     const CSRF = "{{ csrf }}";
+    const IS_DEMO = {{ 'true' if user and user.agency.is_demo else 'false' }};
     // copy buttons: <button data-copy="text" data-track="event_name" data-trip="id">
     document.addEventListener('click', async (e) => {
       const b = e.target.closest('[data-copy]');
@@ -71,7 +72,7 @@
       catch (_) { const ta = document.createElement('textarea'); ta.value = b.dataset.copy; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove(); }
       const old = b.textContent; b.textContent = "{{ t('copied') }}"; setTimeout(() => b.textContent = old, 1500);
       if (b.dataset.track) {
-        window.dataLayer.push({event: 'app_event', event_name: b.dataset.track, event_params: {trip_id: b.dataset.trip}});
+        window.dataLayer.push({event: 'app_event', event_name: b.dataset.track, event_params: {actor_type: 'agent', is_demo: IS_DEMO, trip_id: Number(b.dataset.trip) || undefined}});
         if (b.dataset.trip) fetch('/trips/' + b.dataset.trip + '/track', {method: 'POST', headers: {'Content-Type': 'application/x-www-form-urlencoded'}, body: 'csrf=' + CSRF + '&event=' + b.dataset.track});
       }
     });
@@ -79,7 +80,7 @@
     document.addEventListener('click', (e) => {
       const a = e.target.closest('a[data-track]');
       if (!a) return;
-      window.dataLayer.push({event: 'app_event', event_name: a.dataset.track, event_params: {trip_id: a.dataset.trip}});
+      window.dataLayer.push({event: 'app_event', event_name: a.dataset.track, event_params: {actor_type: 'agent', is_demo: IS_DEMO, trip_id: Number(a.dataset.trip) || undefined}});
       if (a.dataset.trip) navigator.sendBeacon('/trips/' + a.dataset.trip + '/track', new URLSearchParams({csrf: CSRF, event: a.dataset.track}));
     });
   </script>
