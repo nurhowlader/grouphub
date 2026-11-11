@@ -4,7 +4,7 @@ Univoy is one shared space for a group trip, used by the **agency**, the **group
 
 The full requirements are in [`docs/MVP_One_Pager.md`](docs/MVP_One_Pager.md): the problem, 5 user stories, what is out of scope, the stack, and the funnel.
 
-> **Name:** the product is called **Univoy** (logo in `static/logo.png`, colours navy `#0B1F3A` and orange `#E07A3F`). The Render service is `univoy`, so the public URL is `univoy.onrender.com`. The GitHub repo, the local folder and the Neon project are still called `grouphub`; users never see these.
+> **Name:** the product is called **Univoy** (logo in `static/logo.png`, colours navy `#0B1F3A` and orange `#E07A3F`). The Render service is `univoy`, so the public URL is `univoy.onrender.com`. The GitHub repo and the local folder are still called `grouphub`; users never see these.
 
 The course's code lane (L06) is **VS Code → GitHub → Render**, with the database on **Neon** and measurement through **GTM → GA4** (L08).
 
@@ -66,7 +66,7 @@ Add your teammates under *Settings → Collaborators*.
 
 > Why not Render's database? Render's free Postgres is **deleted 30 days after you create it**, which would be before Demo Day. Neon's free plan has no time limit.
 
-1. Sign up at https://neon.com (GitHub login works). Create a project named `grouphub` and pick the **Europe (Frankfurt)** region.
+1. Sign up at https://neon.com (GitHub login works). Create a project named `univoy` and pick the **Europe (Frankfurt)** region.
 2. On the dashboard click **Connect**, then copy the connection string (`postgresql://...neon.tech/neondb?sslmode=require`).
 You don't need to create any tables: the app creates them the first time it starts.
 
