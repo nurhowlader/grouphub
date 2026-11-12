@@ -27,6 +27,9 @@ app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", "dev-only-change-me")
 if os.environ.get("RENDER") and not os.environ.get("SECRET_KEY"):   # RENDER is set automatically on Render's servers
     # The fallback key above is public on GitHub: with it, anyone could fake a login. Refuse to run online without a real one.
     raise RuntimeError("SECRET_KEY is not set. Add it in Render → Environment.")
+if os.environ.get("RENDER") and not os.environ.get("DATABASE_URL"):
+    # Without it the app would silently use a local SQLite file that Render wipes on every deploy.
+    raise RuntimeError("DATABASE_URL is not set. Add the Neon connection string in Render → Environment.")
 db_url = os.environ.get("DATABASE_URL", "sqlite:///grouphub.db")
 if db_url.startswith("postgres://"):            # Neon/Render give postgres://, SQLAlchemy wants postgresql+psycopg://
     db_url = db_url.replace("postgres://", "postgresql+psycopg://", 1)
@@ -34,6 +37,9 @@ elif db_url.startswith("postgresql://"):
     db_url = db_url.replace("postgresql://", "postgresql+psycopg://", 1)
 app.config["SQLALCHEMY_DATABASE_URI"] = db_url
 app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {"pool_pre_ping": True, "pool_recycle": 280}
+if db_url.startswith("postgresql"):
+    # fail fast with a clear error (instead of a Render "no open ports" timeout) if the database can't be reached
+    app.config["SQLALCHEMY_ENGINE_OPTIONS"]["connect_args"] = {"connect_timeout": 10}
 app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(days=90)
 APP_NAME = os.environ.get("APP_NAME", "Univoy")
 GTM_ID = os.environ.get("GTM_ID", "")            # e.g. GTM-XXXXXXX  (leave empty locally)
